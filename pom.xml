@@ -61,7 +61,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                com.example.bloedonderzoeksyteem/com.example.bloedonderzoeksyteem.HelloApplication
+                                com.example.bloedonderzoeksyteem/com.example.bloedonderzoeksyteem.Applicatie
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
