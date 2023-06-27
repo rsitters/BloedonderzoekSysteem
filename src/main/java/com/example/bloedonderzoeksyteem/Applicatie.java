@@ -1,8 +1,13 @@
 package com.example.bloedonderzoeksyteem;
 
+import com.example.bloedonderzoeksyteem.schermen.Patiëntscherm;
+import com.example.bloedonderzoeksyteem.schermen.Startscherm;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -18,11 +23,13 @@ public class Applicatie extends Application {
 
     private BorderPane root;
     private Text bottomText;
+    private Startscherm startscherm;
+    private Patiëntscherm patiëntscherm;
 
     @Override
     public void start(Stage stage) throws IOException {
         root = new BorderPane();
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 1200, 800);
         stage.setResizable(false);
         stage.setTitle("");
         stage.setScene(scene);
@@ -36,6 +43,9 @@ public class Applicatie extends Application {
         topBar.getChildren().add(titleText);
         root.setTop(topBar);
 
+        startscherm = new Startscherm(this);
+        root.setCenter(startscherm.createStartscherm());
+
         // Create and set the bottom bar
         HBox bottomBar = new HBox();
         bottomBar.setPadding(new Insets(10));
@@ -47,6 +57,11 @@ public class Applicatie extends Application {
         root.setBottom(bottomBar);
 
         stage.show();
+    }
+
+    public void switchToPatiëntscherm() {
+        patiëntscherm = new Patiëntscherm();
+        root.setCenter(patiëntscherm.createPatiëntscherm());
     }
 
     public static void main(String[] args) {
