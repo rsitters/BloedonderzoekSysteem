@@ -2,14 +2,15 @@ package com.example.bloedonderzoeksyteem.schermen;
 
 import com.example.bloedonderzoeksyteem.Database;
 import com.example.bloedonderzoeksyteem.models.Patiënt;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.util.Callback;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Patiëntscherm {
 
@@ -26,49 +27,58 @@ public class Patiëntscherm {
             throw new RuntimeException(e);
         }
 
-        patiëntTableView = new TableView<Patiënt>();
-        patiëntTableView.setEditable(true);
+        patiëntTableView = createPatiëntTableView();
+        borderPane.setCenter(patiëntTableView);
 
-        TableColumn<Patiënt, String> id_column = new TableColumn<Patiënt, String>("ID");
-        id_column.setCellValueFactory(new PropertyValueFactory<Patiënt, String>("id"));
+        return borderPane;
+    }
 
-        TableColumn<Patiënt, String> first_name_column = new TableColumn<Patiënt, String>("Voornaam");
-        first_name_column.setCellValueFactory(new PropertyValueFactory<Patiënt, String>("firstName"));
+    public TableView<Patiënt> getPatiëntTableView() {
+        return patiëntTableView;
+    }
 
-        TableColumn<Patiënt, String> last_name_column = new TableColumn<Patiënt, String>("Achternaam");
-        last_name_column.setCellValueFactory(new PropertyValueFactory<Patiënt, String>("lastName"));
+    public TableView<Patiënt> createPatiëntTableView() {
+        TableView<Patiënt> tableView = new TableView<>();
+        tableView.setEditable(true);
 
-        TableColumn<Patiënt, String> birthdate_name_column = new TableColumn<Patiënt, String>("Geboortedatum");
-        birthdate_name_column.setCellValueFactory(new PropertyValueFactory<Patiënt, String>("birthDate"));
+        TableColumn<Patiënt, Integer> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
 
-//        TableColumn<Patiënt, String> bsn_name_column = new TableColumn<Patiënt, String>("BSN");
-//        bsn_name_column.setCellValueFactory(new PropertyValueFactory<Patiënt, String>("bsnNumber"));
-//
-//        TableColumn<Patiënt, String> address_name_column = new TableColumn<Patiënt, String>("Adres");
-//        address_name_column.setCellValueFactory(new PropertyValueFactory<Patiënt, String>("address"));
-//
-//        TableColumn<Patiënt, String> phone_name_column = new TableColumn<Patiënt, String>("Telefoonnummer");
-//        phone_name_column.setCellValueFactory(new PropertyValueFactory<Patiënt, String>("phoneNumber"));
-//
-//        TableColumn<Patiënt, String> email_name_column = new TableColumn<Patiënt, String>("Emailadres");
-//        email_name_column.setCellValueFactory(new PropertyValueFactory<Patiënt, String>("emailAddress"));
+        TableColumn<Patiënt, String> firstNameColumn = new TableColumn<>("Voornaam");
+        firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
 
-        patiëntTableView.getColumns().addAll(id_column,first_name_column, last_name_column, birthdate_name_column);
-        patiëntTableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        TableColumn<Patiënt, String> lastNameColumn = new TableColumn<>("Achternaam");
+        lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
 
-        try{
+        TableColumn<Patiënt, LocalDate> birthDateColumn = new TableColumn<>("Geboortedatum");
+        birthDateColumn.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+        birthDateColumn.setCellFactory(column -> new TableCell<Patiënt, LocalDate>() {
+            private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+            @Override
+            protected void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                if (empty || date == null) {
+                    setText(null);
+                } else {
+                    setText(formatter.format(date));
+                }
+            }
+        });
+
+        tableView.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, birthDateColumn);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        try {
             ResultSet rs = db.getPatientData();
-            while (rs.next()){
-                // Create new object for each donor
+            while (rs.next()) {
                 Patiënt patiënt = new Patiënt(rs);
-                // Insert into table
-                patiëntTableView.getItems().add(patiënt);
+                tableView.getItems().add(patiënt);
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
-        borderPane.setCenter(patiëntTableView);
-        return borderPane;
+        return tableView;
     }
 }

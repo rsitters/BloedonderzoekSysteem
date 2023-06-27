@@ -2,19 +2,19 @@ package com.example.bloedonderzoeksyteem.models;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Patiënt {
     private Integer id;
     private String first_name;
     private String last_name;
-    private Date birth_date;
+    private LocalDate birth_date;
     private String bsn_number;
     private String address;
     private String phone_number;
     private String email_address;
 
-    public Patiënt(Integer id, String first_name, String last_name, Date birth_date, String bsn_number, String address, String phone_number, String email_address){
+    public Patiënt(Integer id, String first_name, String last_name, LocalDate birth_date, String bsn_number, String address, String phone_number, String email_address) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
@@ -29,7 +29,7 @@ public class Patiënt {
         this.id = result.getInt("id");
         this.first_name = result.getString("firstname");
         this.last_name = result.getString("lastname");
-        this.birth_date = result.getDate("birthdate");
+        this.birth_date = LocalDate.parse(result.getString("birthdate"));
         this.bsn_number = result.getString("bsn");
         this.address = result.getString("address");
         this.phone_number = result.getString("phone");
@@ -60,11 +60,11 @@ public class Patiënt {
         this.last_name = last_name;
     }
 
-    public Date getBirthDate() {
+    public LocalDate getBirthDate() {
         return birth_date;
     }
 
-    public void setBirthDate(Date birth_date) {
+    public void setBirthDate(LocalDate birth_date) {
         this.birth_date = birth_date;
     }
 
