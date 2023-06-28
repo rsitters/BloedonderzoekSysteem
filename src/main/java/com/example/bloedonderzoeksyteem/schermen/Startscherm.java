@@ -19,7 +19,6 @@ public class Startscherm {
     public BorderPane createStartscherm() {
         BorderPane borderPane = new BorderPane();
 
-        // Create the three buttons
         Button patiëntButton = new Button("Patiënten");
         patiëntButton.setStyle("-fx-font-size: 20px; -fx-background-color: #3253d8; -fx-text-fill: white;");
         patiëntButton.setPrefSize(200, 100);
@@ -28,15 +27,12 @@ public class Startscherm {
         bloodResearchButton.setStyle("-fx-font-size: 20px; -fx-background-color: #3253d8; -fx-text-fill: white;");
         bloodResearchButton.setPrefSize(200, 100);
 
-        // Add the buttons to an HBox
         HBox buttonBox = new HBox(10);
         buttonBox.getChildren().addAll(patiëntButton, bloodResearchButton);
         buttonBox.setAlignment(Pos.CENTER);
 
-        // Add the HBox to the center of the BorderPane
         borderPane.setCenter(buttonBox);
 
-        // Handle the button click events
         patiëntButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {

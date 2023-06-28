@@ -37,7 +37,6 @@ public class Applicatie extends Application {
         stage.setTitle("");
         stage.setScene(scene);
 
-        // Create and set the top bar
         HBox topBar = new HBox();
         topBar.setPadding(new Insets(10));
         topBar.setBackground(new Background(new BackgroundFill(Color.web(BACKGROUND_COLOR), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -46,7 +45,7 @@ public class Applicatie extends Application {
         Text titleText = new Text(TITLE);
         Button returnButton = new Button("HOME");
         titleText.setStyle("-fx-font-size: 30; -fx-font-weight: bold; -fx-fill: WHITE");
-        returnButton.setStyle("-fx-background-color: WHITE; -fx-text-fill: BLACK; -fx-font-weight: bold; -fx-padding: 8px 16px;");
+        returnButton.setStyle("-fx-background-color: WHITE; -fx-text-fill: BLACK;  -fx-font-weight: bold; -fx-padding: 8px 16px;");
         HBox.setHgrow(returnButton, Priority.ALWAYS);
         StackPane leftBox = new StackPane(titleText);
         leftBox.setAlignment(Pos.CENTER_LEFT);
@@ -57,7 +56,6 @@ public class Applicatie extends Application {
         startscherm = new Startscherm(this);
         root.setCenter(startscherm.createStartscherm());
 
-        // Create and set the bottom bar
         HBox bottomBar = new HBox();
         bottomBar.setPadding(new Insets(10));
         bottomBar.setBackground(new Background(new BackgroundFill(Color.web(BACKGROUND_COLOR), CornerRadii.EMPTY, Insets.EMPTY)));
@@ -76,7 +74,6 @@ public class Applicatie extends Application {
         patiëntscherm = new Patiëntscherm();
         root.setCenter(patiëntscherm.createPatiëntscherm());
 
-        // Add an action to the table to open a personal page when a row is clicked
         TableView<Patiënt> patiëntTableView = patiëntscherm.getPatiëntTableView();
         patiëntTableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -89,7 +86,7 @@ public class Applicatie extends Application {
     }
 
     public void openPatiëntPagina(Patiënt patiënt) {
-        patiëntgegevensscherm = new Patiëntgegevensscherm();
+        patiëntgegevensscherm = new Patiëntgegevensscherm(this);
         root.setCenter(patiëntgegevensscherm.createPatiëntgegevensscherm(patiënt));
     }
 

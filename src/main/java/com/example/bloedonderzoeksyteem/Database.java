@@ -15,7 +15,6 @@ public class Database {
         try {
             this.conn = DriverManager.getConnection(cString);
             this.stm = conn.createStatement();
-            // Voeg de volgende regel toe om de voorbereide verklaring voor het invoegen van patiënten te maken
             this.insertStatement = conn.prepareStatement("INSERT INTO patient (firstname, lastname, birthdate, bsn, address, email, phone) VALUES (?, ?, ?, ?, ?, ?, ?)");
         } catch (SQLException e) {
             System.out.println("Kan geen verbinding maken!");
@@ -26,7 +25,6 @@ public class Database {
         return stm.executeQuery("SELECT * FROM patient");
     }
 
-    // Methode om een nieuwe patiënt aan de database toe te voegen
     public void addPatient(String firstName, String lastName, Date birthDate, String bsn, String address, String email, String phone) throws SQLException {
         // Gebruik de voorbereide verklaring om parameters in te voegen
         insertStatement.setString(1, firstName);
@@ -39,6 +37,14 @@ public class Database {
 
         // Voer de voorbereide verklaring uit
         insertStatement.executeUpdate();
+    }
+
+    public void deletePatient(int patientId) throws SQLException {
+        String query = "DELETE FROM patient WHERE id = ?";
+        PreparedStatement deleteStatement = conn.prepareStatement(query);
+        deleteStatement.setInt(1, patientId);
+
+        deleteStatement.executeUpdate();
     }
 }
 
