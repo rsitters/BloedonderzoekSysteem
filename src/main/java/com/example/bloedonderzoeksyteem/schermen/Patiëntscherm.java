@@ -2,12 +2,15 @@ package com.example.bloedonderzoeksyteem.schermen;
 
 import com.example.bloedonderzoeksyteem.Database;
 import com.example.bloedonderzoeksyteem.models.Patiënt;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -44,9 +47,13 @@ public class Patiëntscherm {
             createAddPatientPopup();
         });
 
+        // Stijl voor de addButton
+        addButton.setStyle("-fx-border-color: black; -fx-background-color: white; -fx-text-fill: black; -fx-border-radius: 5px; -fx-background-radius: 5px; -fx-font-weight: bold;");
+
         borderPane.setTop(titleLabel);
         borderPane.setCenter(patiëntTableView);
         borderPane.setBottom(addButton);
+        BorderPane.setAlignment(addButton, Pos.CENTER_RIGHT);
         BorderPane.setMargin(addButton, new Insets(10));
 
         return borderPane;
@@ -105,56 +112,69 @@ public class Patiëntscherm {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setTitle("Patiënt Toevoegen");
+        popupStage.setResizable(false); // Voorkomt dat de pop-up schaalbaar is
 
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(10));
         gridPane.setHgap(10);
         gridPane.setVgap(10);
 
+        // Stijl voor labels
+        String labelStyle = "-fx-font-weight: bold;";
+
         // Voornaam
         Label firstNameLabel = new Label("Voornaam:");
+        firstNameLabel.setStyle(labelStyle);
         TextField firstNameField = new TextField();
         gridPane.add(firstNameLabel, 0, 0);
         gridPane.add(firstNameField, 1, 0);
 
         // Achternaam
         Label lastNameLabel = new Label("Achternaam:");
+        lastNameLabel.setStyle(labelStyle);
         TextField lastNameField = new TextField();
         gridPane.add(lastNameLabel, 0, 1);
         gridPane.add(lastNameField, 1, 1);
 
         // Geboortedatum
         Label birthDateLabel = new Label("Geboortedatum:");
+        birthDateLabel.setStyle(labelStyle);
         DatePicker birthDatePicker = new DatePicker();
         gridPane.add(birthDateLabel, 0, 2);
         gridPane.add(birthDatePicker, 1, 2);
 
         // BSN
         Label bsnLabel = new Label("BSN:");
+        bsnLabel.setStyle(labelStyle);
         TextField bsnField = new TextField();
         gridPane.add(bsnLabel, 0, 3);
         gridPane.add(bsnField, 1, 3);
 
         // Adres
         Label addressLabel = new Label("Adres:");
+        addressLabel.setStyle(labelStyle);
         TextField addressField = new TextField();
         gridPane.add(addressLabel, 0, 4);
         gridPane.add(addressField, 1, 4);
 
         // E-mail
         Label emailLabel = new Label("E-mail:");
+        emailLabel.setStyle(labelStyle);
         TextField emailField = new TextField();
         gridPane.add(emailLabel, 0, 5);
         gridPane.add(emailField, 1, 5);
 
         // Telefoonnummer
         Label phoneLabel = new Label("Telefoonnummer:");
+        phoneLabel.setStyle(labelStyle);
         TextField phoneField = new TextField();
         gridPane.add(phoneLabel, 0, 6);
         gridPane.add(phoneField, 1, 6);
 
-        // Opslaan knop
+        // Opslaan knop stijl
+        String saveButtonStyle = "-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
         Button saveButton = new Button("Opslaan");
+        saveButton.setStyle(saveButtonStyle);
         saveButton.setOnAction(e -> {
             String firstName = firstNameField.getText();
             String lastName = lastNameField.getText();
@@ -188,10 +208,15 @@ public class Patiëntscherm {
             // Sluit de pop-up
             popupStage.close();
         });
-        gridPane.add(saveButton, 0, 7);
+        GridPane.setHalignment(saveButton, HPos.RIGHT);
+        gridPane.add(saveButton, 1, 7);
+
+        // Padding voor alle elementen
+        gridPane.setPadding(new Insets(10));
 
         Scene scene = new Scene(gridPane);
         popupStage.setScene(scene);
         popupStage.showAndWait();
     }
+
 }
