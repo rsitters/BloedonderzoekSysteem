@@ -6,16 +6,11 @@ import com.example.bloedonderzoeksyteem.schermen.Patiëntscherm;
 import com.example.bloedonderzoeksyteem.schermen.Startscherm;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -46,9 +41,17 @@ public class Applicatie extends Application {
         HBox topBar = new HBox();
         topBar.setPadding(new Insets(10));
         topBar.setBackground(new Background(new BackgroundFill(Color.web(BACKGROUND_COLOR), CornerRadii.EMPTY, Insets.EMPTY)));
+        topBar.setAlignment(Pos.CENTER_RIGHT);
+        topBar.setSpacing(10);
         Text titleText = new Text(TITLE);
+        Button returnButton = new Button("HOME");
         titleText.setStyle("-fx-font-size: 30; -fx-font-weight: bold; -fx-fill: WHITE");
-        topBar.getChildren().add(titleText);
+        returnButton.setStyle("-fx-background-color: WHITE; -fx-text-fill: BLACK; -fx-font-weight: bold; -fx-padding: 8px 16px;");
+        HBox.setHgrow(returnButton, Priority.ALWAYS);
+        StackPane leftBox = new StackPane(titleText);
+        leftBox.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(leftBox, Priority.ALWAYS);
+        topBar.getChildren().addAll(leftBox, returnButton);
         root.setTop(topBar);
 
         startscherm = new Startscherm(this);
@@ -64,6 +67,8 @@ public class Applicatie extends Application {
         bottomBar.getChildren().add(bottomText);
         root.setBottom(bottomBar);
 
+        returnButton.setOnAction(event -> switchToStartscherm());
+
         stage.show();
     }
 
@@ -71,7 +76,7 @@ public class Applicatie extends Application {
         patiëntscherm = new Patiëntscherm();
         root.setCenter(patiëntscherm.createPatiëntscherm());
 
-        // Voeg een actie toe aan de tabel om een persoonlijke pagina te openen wanneer er op een rij wordt geklikt
+        // Add an action to the table to open a personal page when a row is clicked
         TableView<Patiënt> patiëntTableView = patiëntscherm.getPatiëntTableView();
         patiëntTableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
@@ -88,7 +93,12 @@ public class Applicatie extends Application {
         root.setCenter(patiëntgegevensscherm.createPatiëntgegevensscherm(patiënt));
     }
 
+    public void switchToStartscherm() {
+        root.setCenter(startscherm.createStartscherm());
+    }
+
     public static void main(String[] args) {
         launch();
     }
 }
+

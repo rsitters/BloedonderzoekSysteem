@@ -2,11 +2,17 @@ package com.example.bloedonderzoeksyteem.schermen;
 
 import com.example.bloedonderzoeksyteem.Database;
 import com.example.bloedonderzoeksyteem.models.Patiënt;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.util.Callback;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -27,8 +33,21 @@ public class Patiëntscherm {
             throw new RuntimeException(e);
         }
 
+        Label titleLabel = new Label("Patiëntenlijst");
+        titleLabel.setStyle("-fx-font-size: 20; -fx-font-weight: bold; -fx-padding: 10px;");
+
         patiëntTableView = createPatiëntTableView();
+
+        Button addButton = new Button("Patiënt Toevoegen");
+        addButton.setOnAction(e -> {
+            // Open pop-upvenster om patiëntgegevens in te vullen
+            createAddPatientPopup();
+        });
+
+        borderPane.setTop(titleLabel);
         borderPane.setCenter(patiëntTableView);
+        borderPane.setBottom(addButton);
+        BorderPane.setMargin(addButton, new Insets(10));
 
         return borderPane;
     }
@@ -80,5 +99,99 @@ public class Patiëntscherm {
         }
 
         return tableView;
+    }
+
+    private void createAddPatientPopup() {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Patiënt Toevoegen");
+
+        GridPane gridPane = new GridPane();
+        gridPane.setPadding(new Insets(10));
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+
+        // Voornaam
+        Label firstNameLabel = new Label("Voornaam:");
+        TextField firstNameField = new TextField();
+        gridPane.add(firstNameLabel, 0, 0);
+        gridPane.add(firstNameField, 1, 0);
+
+        // Achternaam
+        Label lastNameLabel = new Label("Achternaam:");
+        TextField lastNameField = new TextField();
+        gridPane.add(lastNameLabel, 0, 1);
+        gridPane.add(lastNameField, 1, 1);
+
+        // Geboortedatum
+        Label birthDateLabel = new Label("Geboortedatum:");
+        DatePicker birthDatePicker = new DatePicker();
+        gridPane.add(birthDateLabel, 0, 2);
+        gridPane.add(birthDatePicker, 1, 2);
+
+        // BSN
+        Label bsnLabel = new Label("BSN:");
+        TextField bsnField = new TextField();
+        gridPane.add(bsnLabel, 0, 3);
+        gridPane.add(bsnField, 1, 3);
+
+        // Adres
+        Label addressLabel = new Label("Adres:");
+        TextField addressField = new TextField();
+        gridPane.add(addressLabel, 0, 4);
+        gridPane.add(addressField, 1, 4);
+
+        // E-mail
+        Label emailLabel = new Label("E-mail:");
+        TextField emailField = new TextField();
+        gridPane.add(emailLabel, 0, 5);
+        gridPane.add(emailField, 1, 5);
+
+        // Telefoonnummer
+        Label phoneLabel = new Label("Telefoonnummer:");
+        TextField phoneField = new TextField();
+        gridPane.add(phoneLabel, 0, 6);
+        gridPane.add(phoneField, 1, 6);
+
+        // Opslaan knop
+        Button saveButton = new Button("Opslaan");
+        saveButton.setOnAction(e -> {
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            LocalDate birthDate = birthDatePicker.getValue();
+            String bsn = bsnField.getText();
+            String address = addressField.getText();
+            String email = emailField.getText();
+            String phone = phoneField.getText();
+
+            try {
+                // Roep de addPatient() methode van de Database-klasse aan om de patiënt toe te voegen aan de database
+                db.addPatient(firstName, lastName, Date.valueOf(birthDate), bsn, address, email, phone);
+
+                // Vernieuw de tabelweergave om de nieuwe patiënt weer te geven
+                patiëntTableView.getItems().clear();
+                ResultSet rs = db.getPatientData();
+                while (rs.next()) {
+                    Patiënt patiënt = new Patiënt(rs);
+                    patiëntTableView.getItems().add(patiënt);
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                // Toon een foutmelding aan de gebruiker als er een fout optreedt tijdens het toevoegen van de patiënt
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Fout");
+                alert.setHeaderText("Fout bij toevoegen van patiënt");
+                alert.setContentText("Er is een fout opgetreden bij het toevoegen van de patiënt. Probeer het opnieuw.");
+                alert.showAndWait();
+            }
+
+            // Sluit de pop-up
+            popupStage.close();
+        });
+        gridPane.add(saveButton, 0, 7);
+
+        Scene scene = new Scene(gridPane);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
     }
 }
