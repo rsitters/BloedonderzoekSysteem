@@ -40,6 +40,13 @@ public class Startscherm {
             }
         });
 
+        bloodResearchButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                applicatie.switchToOnderzoeklijst();
+            }
+        });
+
         return borderPane;
     }
 }

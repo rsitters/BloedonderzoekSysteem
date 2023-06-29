@@ -33,12 +33,15 @@ public class Database {
         return stm.executeQuery("SELECT * FROM patient");
     }
 
+    public ResultSet getAllBloodTests() throws SQLException{
+        return stm.executeQuery("SELECT * FROM blood_test");
+    }
+
     public ResultSet getBloodTestsForPatient(int patientId) throws SQLException {
         selectBloodTestsStatement.setInt(1, patientId);
 
         return selectBloodTestsStatement.executeQuery();
     }
-
 
     public void addPatient(String firstName, String lastName, Date birthDate, String bsn, String address, String email, String phone) throws SQLException {
         insertStatement.setString(1, firstName);

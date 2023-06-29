@@ -1,8 +1,9 @@
 package com.example.bloedonderzoeksyteem;
 
 import com.example.bloedonderzoeksyteem.models.Patiënt;
-import com.example.bloedonderzoeksyteem.schermen.Patiëntgegevensscherm;
+import com.example.bloedonderzoeksyteem.schermen.Onderzoekenlijst;
 import com.example.bloedonderzoeksyteem.schermen.Patiëntscherm;
+import com.example.bloedonderzoeksyteem.schermen.Patiëntenlijst;
 import com.example.bloedonderzoeksyteem.schermen.Startscherm;
 import javafx.application.Application;
 import javafx.geometry.Insets;
@@ -26,8 +27,9 @@ public class Applicatie extends Application {
     private BorderPane root;
     private Text bottomText;
     private Startscherm startscherm;
+    private Patiëntenlijst patiëntenlijst;
+    private Onderzoekenlijst onderzoekenlijst;
     private Patiëntscherm patiëntscherm;
-    private Patiëntgegevensscherm patiëntgegevensscherm;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -71,10 +73,10 @@ public class Applicatie extends Application {
     }
 
     public void switchToPatiëntscherm() {
-        patiëntscherm = new Patiëntscherm();
-        root.setCenter(patiëntscherm.createPatiëntscherm());
+        patiëntenlijst = new Patiëntenlijst();
+        root.setCenter(patiëntenlijst.createPatiëntlijst());
 
-        TableView<Patiënt> patiëntTableView = patiëntscherm.getPatiëntTableView();
+        TableView<Patiënt> patiëntTableView = patiëntenlijst.getPatiëntTableView();
         patiëntTableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 Patiënt selectedPatiënt = patiëntTableView.getSelectionModel().getSelectedItem();
@@ -85,9 +87,14 @@ public class Applicatie extends Application {
         });
     }
 
+    public void switchToOnderzoeklijst() {
+        onderzoekenlijst = new Onderzoekenlijst();
+        root.setCenter(onderzoekenlijst.createBloedonderzoekscherm());
+    }
+
     public void openPatiëntPagina(Patiënt patiënt) {
-        patiëntgegevensscherm = new Patiëntgegevensscherm(this);
-        root.setCenter(patiëntgegevensscherm.createPatiëntgegevensscherm(patiënt));
+        patiëntscherm = new Patiëntscherm(this);
+        root.setCenter(patiëntscherm.createPatiëntgegevensscherm(patiënt));
     }
 
     public void switchToStartscherm() {
