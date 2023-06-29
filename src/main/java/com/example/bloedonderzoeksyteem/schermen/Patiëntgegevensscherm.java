@@ -5,25 +5,38 @@ import com.example.bloedonderzoeksyteem.Applicatie;
 import com.example.bloedonderzoeksyteem.models.Patiënt;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class Patiëntgegevensscherm {
 
     private Database db;
     private Applicatie applicatie;
+    private Label nameValueLabel;
+    private Label birthDateValueLabel;
+    private Label bsnValueLabel;
+    private Label addressValueLabel;
+    private Label phoneNumberValueLabel;
+    private Label emailValueLabel;
+    private DateTimeFormatter formatter;
+
 
     public Patiëntgegevensscherm(Applicatie applicatie) {
         this.applicatie = applicatie;
+        this.formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     }
 
     public BorderPane createPatiëntgegevensscherm(Patiënt patiënt) {
@@ -71,30 +84,29 @@ public class Patiëntgegevensscherm {
 
         Label nameLabel = new Label("Naam: ");
         nameLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        Label nameValueLabel = new Label(patiënt.getFirstName() + " " + patiënt.getLastName());
+        this.nameValueLabel = new Label(patiënt.getFirstName() + " " + patiënt.getLastName());
 
         Label birthDateLabel = new Label("Geboortedatum: ");
         birthDateLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String formattedBirthDate = patiënt.getBirthDate().format(formatter);
-        Label birthDateValueLabel = new Label(formattedBirthDate);
+        this.birthDateValueLabel = new Label(formattedBirthDate);
 
         Label bsnLabel = new Label("BSN-nummer: ");
         bsnLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        Label bsnValueLabel = new Label(patiënt.getBsnNumber());
+        this.bsnValueLabel = new Label(patiënt.getBsnNumber());
 
         Label addressLabel = new Label("Adres: ");
         addressLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        Label addressValueLabel = new Label(patiënt.getAddress());
+        this.addressValueLabel = new Label(patiënt.getAddress());
 
         Label phoneNumberLabel = new Label("Telefoonnummer: ");
         phoneNumberLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        Label phoneNumberValueLabel = new Label(patiënt.getPhoneNumber());
+        this.phoneNumberValueLabel = new Label(patiënt.getPhoneNumber());
 
         Label emailLabel = new Label("E-mailadres: ");
         emailLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        Label emailValueLabel = new Label(patiënt.getEmailAddress());
+        this.emailValueLabel = new Label(patiënt.getEmailAddress());
 
         gegevensGrid.add(titlePersonal, 0, 0, 2, 1);
         gegevensGrid.add(nameLabel, 0, 1);
@@ -127,6 +139,13 @@ public class Patiëntgegevensscherm {
         Button verwijderenButton = new Button("Verwijderen");
         verwijderenButton.setStyle("-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;");
 
+        wijzigenButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                openWijzigingsPopup(patiënt);
+            }
+        });
+
         verwijderenButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -149,5 +168,123 @@ public class Patiëntgegevensscherm {
         borderPane.setBottom(knoppenBox);
 
         return borderPane;
+    }
+
+    public void openWijzigingsPopup(Patiënt patiënt) {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Wijzig patiëntgegevens");
+        popupStage.setResizable(false);
+
+        GridPane gridPane = new GridPane();
+        gridPane.setPadding(new Insets(10));
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+
+        String labelStyle = "-fx-font-weight: bold;";
+
+        Label firstNameLabel = new Label("Voornaam:");
+        firstNameLabel.setStyle(labelStyle);
+        TextField firstNameField = new TextField(patiënt.getFirstName());
+        gridPane.add(firstNameLabel, 0, 0);
+        gridPane.add(firstNameField, 1, 0);
+
+        Label lastNameLabel = new Label("Achternaam:");
+        lastNameLabel.setStyle(labelStyle);
+        TextField lastNameField = new TextField(patiënt.getLastName());
+        gridPane.add(lastNameLabel, 0, 1);
+        gridPane.add(lastNameField, 1, 1);
+
+        Label birthDateLabel = new Label("Geboortedatum:");
+        birthDateLabel.setStyle(labelStyle);
+        DatePicker birthDatePicker = new DatePicker(patiënt.getBirthDate());
+        birthDatePicker.setEditable(false);
+        gridPane.add(birthDateLabel, 0, 2);
+        gridPane.add(birthDatePicker, 1, 2);
+
+        Label bsnLabel = new Label("BSN:");
+        bsnLabel.setStyle(labelStyle);
+        TextField bsnField = new TextField(patiënt.getBsnNumber());
+        gridPane.add(bsnLabel, 0, 3);
+        gridPane.add(bsnField, 1, 3);
+
+        Label addressLabel = new Label("Adres:");
+        addressLabel.setStyle(labelStyle);
+        TextField addressField = new TextField(patiënt.getAddress());
+        gridPane.add(addressLabel, 0, 4);
+        gridPane.add(addressField, 1, 4);
+
+        Label emailLabel = new Label("E-mail:");
+        emailLabel.setStyle(labelStyle);
+        TextField emailField = new TextField(patiënt.getEmailAddress());
+        gridPane.add(emailLabel, 0, 5);
+        gridPane.add(emailField, 1, 5);
+
+        Label phoneLabel = new Label("Telefoonnummer:");
+        phoneLabel.setStyle(labelStyle);
+        TextField phoneField = new TextField(patiënt.getPhoneNumber());
+        gridPane.add(phoneLabel, 0, 6);
+        gridPane.add(phoneField, 1, 6);
+
+        String saveButtonStyle = "-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+        Button saveButton = new Button("Opslaan");
+        saveButton.setStyle(saveButtonStyle);
+        GridPane.setHalignment(saveButton, HPos.RIGHT);
+        gridPane.add(saveButton, 1, 7);
+
+        String cancelButtonStyle = "-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+        Button cancelButton = new Button("Annuleren");
+        cancelButton.setStyle(cancelButtonStyle);
+        gridPane.add(cancelButton, 0, 7);
+
+        saveButton.setOnAction(e -> {
+            String firstName = firstNameField.getText();
+            String lastName = lastNameField.getText();
+            LocalDate birthDate = birthDatePicker.getValue();
+            String bsn = bsnField.getText();
+            String address = addressField.getText();
+            String email = emailField.getText();
+            String phone = phoneField.getText();
+
+            patiënt.setFirstName(firstName);
+            patiënt.setLastName(lastName);
+            patiënt.setBirthDate(birthDate);
+            patiënt.setBsnNumber(bsn);
+            patiënt.setAddress(address);
+            patiënt.setPhoneNumber(phone);
+            patiënt.setEmailAddress(email);
+
+            try {
+                db.updatePatient(patiënt.getId(), firstName, lastName, Date.valueOf(birthDate), bsn, address, email, phone);
+                updateUIWithPatientData(patiënt);
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Fout");
+                alert.setHeaderText("Fout bij het wijzigen van patiëntgegevens");
+                alert.setContentText("Er is een fout opgetreden bij het wijzigen van de patiëntgegevens. Probeer het opnieuw.");
+                alert.showAndWait();
+            }
+
+            popupStage.close();
+        });
+
+        cancelButton.setOnAction(e -> {
+            popupStage.close();
+        });
+
+        Scene scene = new Scene(gridPane);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
+    }
+
+
+    private void updateUIWithPatientData(Patiënt patiënt) {
+        this.nameValueLabel.setText(patiënt.getFirstName() + " " + patiënt.getLastName());
+        this.birthDateValueLabel.setText(patiënt.getBirthDate().format(formatter));
+        this.bsnValueLabel.setText(patiënt.getBsnNumber());
+        this.addressValueLabel.setText(patiënt.getAddress());
+        this.phoneNumberValueLabel.setText(patiënt.getPhoneNumber());
+        this.emailValueLabel.setText(patiënt.getEmailAddress());
     }
 }
