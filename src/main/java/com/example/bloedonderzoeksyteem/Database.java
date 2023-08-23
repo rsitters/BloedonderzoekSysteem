@@ -11,6 +11,7 @@ public class Database {
     private PreparedStatement deleteStatement;
     private PreparedStatement deleteBloodtestStatement;
     private  PreparedStatement updateStatement;
+    private PreparedStatement insertBloodTestStatement;
 
     public Database() {
         String user = "root";
@@ -24,6 +25,7 @@ public class Database {
             this.deleteStatement = conn.prepareStatement("DELETE FROM patient WHERE id = ?");
             this.deleteBloodtestStatement = conn.prepareStatement("DELETE FROM blood_test WHERE patient_id = ?");
             this.updateStatement = conn.prepareStatement("UPDATE patient SET firstname = ?, lastname = ?, birthdate = ?, bsn = ?, address = ?, email = ?, phone = ? WHERE id = ?");
+            this.insertBloodTestStatement = conn.prepareStatement("INSERT INTO blood_test (patient_id, test_type, tube_count, test_date, doctor_id) VALUES (?, ?, ?, ?, ?)");
         } catch (SQLException e) {
             System.out.println("Kan geen verbinding maken!");
         }
@@ -35,6 +37,10 @@ public class Database {
 
     public ResultSet getAllBloodTests() throws SQLException{
         return stm.executeQuery("SELECT * FROM blood_test");
+    }
+
+    public ResultSet getAllDoctors() throws  SQLException{
+        return stm.executeQuery("SELECT * FROM doctor");
     }
 
     public ResultSet getBloodTestsForPatient(int patientId) throws SQLException {
@@ -74,6 +80,17 @@ public class Database {
         updateStatement.setInt(8, patientId);
 
         updateStatement.executeUpdate();
+    }
+
+    public void addResearch(int patientId, String testType, int numberOfTubes, Date testDate, int doctor) throws SQLException {{
+            insertBloodTestStatement.setInt(1, patientId);
+            insertBloodTestStatement.setString(2, testType);
+            insertBloodTestStatement.setInt(3, numberOfTubes);
+            insertBloodTestStatement.setDate(4, testDate);
+            insertBloodTestStatement.setInt(5, doctor);
+
+            insertBloodTestStatement.executeUpdate();
+        }
     }
 }
 

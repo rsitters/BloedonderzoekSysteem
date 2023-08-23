@@ -3,7 +3,9 @@ package com.example.bloedonderzoeksyteem.schermen;
 import com.example.bloedonderzoeksyteem.Database;
 import com.example.bloedonderzoeksyteem.Applicatie;
 import com.example.bloedonderzoeksyteem.models.Bloedonderzoek;
+import com.example.bloedonderzoeksyteem.models.Dokter;
 import com.example.bloedonderzoeksyteem.models.Patiënt;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -23,6 +25,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Patiëntscherm {
 
@@ -347,9 +352,106 @@ public class Patiëntscherm {
         Button addResearchButton = new Button("Onderzoek toevoegen");
         addResearchButton.setStyle(addButtonStyle);
 
+        addResearchButton.setOnAction(e -> {
+            openToevoegenPopup(patientId);
+        });
+
+
         HBox buttonContainer = new HBox(addResearchButton);
         buttonContainer.setAlignment(Pos.CENTER_RIGHT);
         onderzoekenBox.getChildren().addAll(titleResearch, tableView, buttonContainer);
     }
 
+    public void openToevoegenPopup(int patientId) {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.setTitle("Onderzoek Toevoegen");
+        popupStage.setResizable(false);
+
+        GridPane gridPane = new GridPane();
+        gridPane.setPadding(new Insets(10));
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+
+        Label typeLabel = new Label("Type test:");
+        TextField typeTextField = new TextField();
+        gridPane.add(typeLabel, 0, 0);
+        gridPane.add(typeTextField, 1, 0);
+
+        Label buisjesLabel = new Label("Aantal buisjes:");
+        TextField buisjesTextField = new TextField();
+        gridPane.add(buisjesLabel, 0, 1);
+        gridPane.add(buisjesTextField, 1, 1);
+
+        Label datumLabel = new Label("Testdatum:");
+        DatePicker datumPicker = new DatePicker();
+        gridPane.add(datumLabel, 0, 2);
+        gridPane.add(datumPicker, 1, 2);
+
+        Label doctorLabel = new Label("Dokter:");
+        ComboBox<Dokter> doctorComboBox = new ComboBox<>();
+        try {
+            ResultSet doctorsResultSet = db.getAllDoctors();
+            List<Dokter> doctorsList = new ArrayList<>();
+            while (doctorsResultSet.next()) {
+                int id = doctorsResultSet.getInt("id");
+                String firstName = doctorsResultSet.getString("firstName");
+                String lastName = doctorsResultSet.getString("lastName");
+                Dokter dokter = new Dokter(id, firstName, lastName);
+                doctorsList.add(dokter);
+            }
+            doctorComboBox.setItems(FXCollections.observableArrayList(doctorsList));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        gridPane.add(doctorLabel, 0, 3);
+        gridPane.add(doctorComboBox, 1, 3);
+
+        Button saveButton = new Button("Opslaan");
+        saveButton.setOnAction(event -> {
+            String selectedType = typeTextField.getText();
+            Integer buisjes = Integer.parseInt(buisjesTextField.getText());
+            LocalDate testDatum = datumPicker.getValue();
+            Dokter selectedDoctor = doctorComboBox.getValue(); // Change the data type to Dokter
+
+            if (selectedDoctor != null) {
+                Integer selectedDoctorId = selectedDoctor.getId(); // Get the ID of the selected doctor
+
+                try {
+                    // First, add the blood test to the database
+                    db.addResearch(patientId, selectedType, buisjes, Date.valueOf(testDatum), selectedDoctorId);
+
+                    // Update the UI with the new blood test data
+                    updateOnderzoekenBox(patientId);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    // Show an error message if something goes wrong
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Fout");
+                    alert.setHeaderText("Fout bij toevoegen van onderzoek");
+                    alert.setContentText("Er is een fout opgetreden bij het toevoegen van het onderzoek. Probeer het opnieuw.");
+                    alert.showAndWait();
+                }
+
+                popupStage.close();
+            } else {
+                // Handle case where no doctor is selected
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Waarschuwing");
+                alert.setHeaderText("Geen dokter geselecteerd");
+                alert.setContentText("Selecteer een dokter voordat u het onderzoek opslaat.");
+                alert.showAndWait();
+            }
+        });
+
+        gridPane.add(saveButton, 1, 4);
+
+        Scene scene = new Scene(gridPane);
+        popupStage.setScene(scene);
+        popupStage.showAndWait();
+    }
 }
+
+
