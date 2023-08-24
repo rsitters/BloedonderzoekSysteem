@@ -7,6 +7,7 @@ public class Database {
     protected Connection conn;
     private Statement stm;
     private PreparedStatement selectBloodTestsStatement;
+    private PreparedStatement selectBloodTestResult;
     private PreparedStatement insertStatement;
     private PreparedStatement deleteStatement;
     private PreparedStatement deleteBloodtestStatement;
@@ -21,6 +22,7 @@ public class Database {
             this.conn = DriverManager.getConnection(cString);
             this.stm = conn.createStatement();
             this.selectBloodTestsStatement = conn.prepareStatement("SELECT * FROM blood_test WHERE patient_id = ?");
+            this.selectBloodTestResult = conn.prepareStatement("SELECT * FROM test_result WHERE test_id = ?");
             this.insertStatement = conn.prepareStatement("INSERT INTO patient (firstname, lastname, birthdate, bsn, address, email, phone) VALUES (?, ?, ?, ?, ?, ?, ?)");
             this.deleteStatement = conn.prepareStatement("DELETE FROM patient WHERE id = ?");
             this.deleteBloodtestStatement = conn.prepareStatement("DELETE FROM blood_test WHERE patient_id = ?");
@@ -47,6 +49,12 @@ public class Database {
         selectBloodTestsStatement.setInt(1, patientId);
 
         return selectBloodTestsStatement.executeQuery();
+    }
+
+    public ResultSet getBloodTestResult(int testId) throws SQLException{
+        selectBloodTestResult.setInt(1, testId);
+
+        return selectBloodTestResult.executeQuery();
     }
 
     public void addPatient(String firstName, String lastName, Date birthDate, String bsn, String address, String email, String phone) throws SQLException {

@@ -3,7 +3,7 @@ package com.example.bloedonderzoeksyteem.schermen;
 import com.example.bloedonderzoeksyteem.Applicatie;
 import com.example.bloedonderzoeksyteem.Database;
 import com.example.bloedonderzoeksyteem.models.Bloedonderzoek;
-import com.example.bloedonderzoeksyteem.models.Patiënt;
+import com.example.bloedonderzoeksyteem.models.Onderzoekuitslag;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -14,6 +14,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+import java.sql.ResultSet;
 import java.time.format.DateTimeFormatter;
 
 public class Onderzoekscherm {
@@ -26,7 +27,7 @@ public class Onderzoekscherm {
         this.formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     }
 
-    public BorderPane createOnderzoekgegevensscherm(Bloedonderzoek bloedonderzoek) {
+    public BorderPane createOnderzoekgegevensscherm(Bloedonderzoek bloedonderzoek, Onderzoekuitslag onderzoekuitslag) {
         BorderPane borderPane = new BorderPane();
         borderPane.setPadding(new Insets(10));
 
@@ -60,13 +61,17 @@ public class Onderzoekscherm {
             }
         });
 
-        GridPane onderzoekGrid = new GridPane();
-        onderzoekGrid.setVgap(10);
-        onderzoekGrid.setHgap(10);
-        onderzoekGrid.setAlignment(Pos.CENTER_LEFT);
+        GridPane mainGrid = new GridPane();
+        mainGrid.setVgap(10);
+        mainGrid.setHgap(10);
+        mainGrid.setAlignment(Pos.CENTER_LEFT);
 
         Label titleOnderzoek = new Label("Onderzoeksinformatie");
         titleOnderzoek.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+
+        Label testIdLabel = new Label("Test ID: ");
+        testIdLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        Label testIdValue = new Label(bloedonderzoek.getId().toString());
 
         Label testTypeLabel = new Label("Test Type: ");
         testTypeLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -89,19 +94,50 @@ public class Onderzoekscherm {
         patientLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         Label patientValueLabel = new Label(db.getPatientName(bloedonderzoek.getPatientId()));
 
-        onderzoekGrid.add(titleOnderzoek, 0, 0, 3, 1);
-        onderzoekGrid.add(testTypeLabel, 0, 1);
-        onderzoekGrid.add(testTypeValueLabel, 1, 1);
-        onderzoekGrid.add(tubeCountLabel, 0, 2);
-        onderzoekGrid.add(tubeCountValueLabel, 1, 2);
-        onderzoekGrid.add(testDateLabel, 0, 3);
-        onderzoekGrid.add(testDateValueLabel, 1, 3);
-        onderzoekGrid.add(doctorLabel, 0, 4);
-        onderzoekGrid.add(doctorValueLabel, 1, 4);
-        onderzoekGrid.add(patientLabel, 0, 5);
-        onderzoekGrid.add(patientValueLabel, 1, 5);
+        Label titleUitslag = new Label("Uitslag");
+        titleUitslag.setFont(Font.font("Arial", FontWeight.BOLD, 20));
 
-        borderPane.setLeft(onderzoekGrid);
+        mainGrid.add(titleOnderzoek, 0, 0, 3, 1);
+        mainGrid.add(testIdLabel,0,1);
+        mainGrid.add(testIdValue,1,1);
+        mainGrid.add(testTypeLabel, 0, 2);
+        mainGrid.add(testTypeValueLabel, 1, 2);
+        mainGrid.add(tubeCountLabel, 0, 3);
+        mainGrid.add(tubeCountValueLabel, 1, 3);
+        mainGrid.add(testDateLabel, 0, 4);
+        mainGrid.add(testDateValueLabel, 1, 4);
+        mainGrid.add(doctorLabel, 0, 5);
+        mainGrid.add(doctorValueLabel, 1, 5);
+        mainGrid.add(patientLabel, 0, 6);
+        mainGrid.add(patientValueLabel, 1, 6);
+        mainGrid.add(titleUitslag, 0, 8, 3, 1);
+
+        if (onderzoekuitslag != null) {
+            Label uitslagIdLabel = new Label("Uitslag ID: ");
+            uitslagIdLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+            Label uitslagIdValue = new Label(onderzoekuitslag.getId().toString());
+
+            Label resultLabel = new Label("Resultaat: ");
+            resultLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+            Label resultValue = new Label(onderzoekuitslag.getResult());
+
+            Label resultDateLabel = new Label("Resultaatdatum: ");
+            resultDateLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+            String formattedResultDate = onderzoekuitslag.getResultDate().format(formatter);
+            Label resultDateValue = new Label(formattedResultDate);
+
+            mainGrid.add(uitslagIdLabel, 0, 9);
+            mainGrid.add(uitslagIdValue, 1, 9);
+            mainGrid.add(resultLabel, 0, 10);
+            mainGrid.add(resultValue, 1, 10);
+            mainGrid.add(resultDateLabel, 0, 11);
+            mainGrid.add(resultDateValue, 1, 11);
+        } else {
+            Label geenUitslagLabel = new Label("Geen uitslag bekend");
+            mainGrid.add(geenUitslagLabel, 0, 9);
+        }
+
+        borderPane.setCenter(mainGrid);
 
         return borderPane;
     }

@@ -1,6 +1,7 @@
 package com.example.bloedonderzoeksyteem;
 
 import com.example.bloedonderzoeksyteem.models.Bloedonderzoek;
+import com.example.bloedonderzoeksyteem.models.Onderzoekuitslag;
 import com.example.bloedonderzoeksyteem.models.Patiënt;
 import com.example.bloedonderzoeksyteem.schermen.*;
 import javafx.application.Application;
@@ -15,6 +16,8 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class Applicatie extends Application {
 
@@ -25,6 +28,7 @@ public class Applicatie extends Application {
     private BorderPane root;
     private Text bottomText;
     private Startscherm startscherm;
+    private Database db;
     private Patiëntenlijst patiëntenlijst;
     private Onderzoekenlijst onderzoekenlijst;
     private Patiëntscherm patiëntscherm;
@@ -68,6 +72,12 @@ public class Applicatie extends Application {
 
         returnButton.setOnAction(event -> switchToStartscherm());
 
+        try {
+            db = new Database();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
         stage.show();
     }
 
@@ -90,15 +100,38 @@ public class Applicatie extends Application {
         onderzoekenlijst = new Onderzoekenlijst();
         root.setCenter(onderzoekenlijst.createBloedonderzoekscherm());
         TableView<Bloedonderzoek> bloedonderzoekTableView = onderzoekenlijst.getBloedonderzoekTableView();
+
         bloedonderzoekTableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 Bloedonderzoek selectedBloedonderzoek = bloedonderzoekTableView.getSelectionModel().getSelectedItem();
                 if (selectedBloedonderzoek != null) {
-                    openBloedonderzoekPagina(selectedBloedonderzoek);
+                    try {
+                        ResultSet onderzoekuitslagResultSet = db.getBloodTestResult(selectedBloedonderzoek.getId());
+
+                        Onderzoekuitslag onderzoekuitslag = null;
+
+                        if (onderzoekuitslagResultSet.next()) {
+                            onderzoekuitslag = new Onderzoekuitslag(
+                                    onderzoekuitslagResultSet.getInt("id"),
+                                    onderzoekuitslagResultSet.getInt("test_id"),
+                                    onderzoekuitslagResultSet.getInt("technician_id"),
+                                    onderzoekuitslagResultSet.getString("result"),
+                                    onderzoekuitslagResultSet.getDate("result_date").toLocalDate()
+                            );
+                        }
+
+                        openBloedonderzoekPagina(selectedBloedonderzoek, onderzoekuitslag);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
+    }
 
+    public void openBloedonderzoekPagina(Bloedonderzoek bloedonderzoek, Onderzoekuitslag onderzoekuitslag) {
+        onderzoekscherm = new Onderzoekscherm(this);
+        root.setCenter(onderzoekscherm.createOnderzoekgegevensscherm(bloedonderzoek, onderzoekuitslag));
     }
 
     public void openPatiëntPagina(Patiënt patiënt) {
@@ -106,10 +139,6 @@ public class Applicatie extends Application {
         root.setCenter(patiëntscherm.createPatiëntgegevensscherm(patiënt));
     }
 
-    public void openBloedonderzoekPagina(Bloedonderzoek bloedonderzoek){
-        onderzoekscherm = new Onderzoekscherm(this);
-        root.setCenter(onderzoekscherm.createOnderzoekgegevensscherm(bloedonderzoek));
-    }
 
     public void switchToStartscherm() {
         root.setCenter(startscherm.createStartscherm());
