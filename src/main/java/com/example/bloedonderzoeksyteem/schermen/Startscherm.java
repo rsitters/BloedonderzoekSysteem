@@ -36,7 +36,7 @@ public class Startscherm {
         patiëntButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                applicatie.switchToPatiëntscherm();
+                applicatie.switchToPatiëntlijst();
             }
         });
 

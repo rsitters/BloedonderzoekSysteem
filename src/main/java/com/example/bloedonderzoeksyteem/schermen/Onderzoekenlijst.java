@@ -35,7 +35,7 @@ public class Onderzoekenlijst {
         return borderPane;
     }
 
-    public TableView<Bloedonderzoek> getPatiëntTableView() {
+    public TableView<Bloedonderzoek> getBloedonderzoekTableView() {
         return bloedonderzoekTableView;
     }
 

@@ -92,5 +92,34 @@ public class Database {
             insertBloodTestStatement.executeUpdate();
         }
     }
+
+    public String getDoctorName(int doctorId) {
+        try {
+            ResultSet resultSet = stm.executeQuery("SELECT * FROM doctor WHERE id = " + doctorId);
+            if (resultSet.next()) {
+                String firstName = resultSet.getString("firstname");
+                String lastName = resultSet.getString("lastname");
+                return firstName + " " + lastName;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String getPatientName(int patientId) {
+        try {
+            ResultSet resultSet = stm.executeQuery("SELECT * FROM patient WHERE id = " + patientId);
+            if (resultSet.next()) {
+                String firstName = resultSet.getString("firstname");
+                String lastName = resultSet.getString("lastname");
+                return firstName + " " + lastName;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
 }
 

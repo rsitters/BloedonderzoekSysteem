@@ -1,10 +1,8 @@
 package com.example.bloedonderzoeksyteem;
 
+import com.example.bloedonderzoeksyteem.models.Bloedonderzoek;
 import com.example.bloedonderzoeksyteem.models.Patiënt;
-import com.example.bloedonderzoeksyteem.schermen.Onderzoekenlijst;
-import com.example.bloedonderzoeksyteem.schermen.Patiëntscherm;
-import com.example.bloedonderzoeksyteem.schermen.Patiëntenlijst;
-import com.example.bloedonderzoeksyteem.schermen.Startscherm;
+import com.example.bloedonderzoeksyteem.schermen.*;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -30,6 +28,7 @@ public class Applicatie extends Application {
     private Patiëntenlijst patiëntenlijst;
     private Onderzoekenlijst onderzoekenlijst;
     private Patiëntscherm patiëntscherm;
+    private Onderzoekscherm onderzoekscherm;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -72,7 +71,7 @@ public class Applicatie extends Application {
         stage.show();
     }
 
-    public void switchToPatiëntscherm() {
+    public void switchToPatiëntlijst() {
         patiëntenlijst = new Patiëntenlijst();
         root.setCenter(patiëntenlijst.createPatiëntlijst());
 
@@ -90,11 +89,26 @@ public class Applicatie extends Application {
     public void switchToOnderzoeklijst() {
         onderzoekenlijst = new Onderzoekenlijst();
         root.setCenter(onderzoekenlijst.createBloedonderzoekscherm());
+        TableView<Bloedonderzoek> bloedonderzoekTableView = onderzoekenlijst.getBloedonderzoekTableView();
+        bloedonderzoekTableView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Bloedonderzoek selectedBloedonderzoek = bloedonderzoekTableView.getSelectionModel().getSelectedItem();
+                if (selectedBloedonderzoek != null) {
+                    openBloedonderzoekPagina(selectedBloedonderzoek);
+                }
+            }
+        });
+
     }
 
     public void openPatiëntPagina(Patiënt patiënt) {
         patiëntscherm = new Patiëntscherm(this);
         root.setCenter(patiëntscherm.createPatiëntgegevensscherm(patiënt));
+    }
+
+    public void openBloedonderzoekPagina(Bloedonderzoek bloedonderzoek){
+        onderzoekscherm = new Onderzoekscherm(this);
+        root.setCenter(onderzoekscherm.createOnderzoekgegevensscherm(bloedonderzoek));
     }
 
     public void switchToStartscherm() {

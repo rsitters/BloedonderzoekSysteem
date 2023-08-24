@@ -78,7 +78,7 @@ public class Patiëntscherm {
         backButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                applicatie.switchToPatiëntscherm();
+                applicatie.switchToPatiëntlijst();
             }
         });
 
@@ -117,7 +117,7 @@ public class Patiëntscherm {
         emailLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         this.emailValueLabel = new Label(patiënt.getEmailAddress());
 
-        gegevensGrid.add(titlePersonal, 0, 0, 2, 1);
+        gegevensGrid.add(titlePersonal, 0, 0, 3, 1);
         gegevensGrid.add(nameLabel, 0, 1);
         gegevensGrid.add(nameValueLabel, 1, 1);
         gegevensGrid.add(birthDateLabel, 0, 2);
@@ -161,7 +161,7 @@ public class Patiëntscherm {
                 try {
                     db.deletePatient(patiënt.getId());
 
-                    applicatie.switchToPatiëntscherm();
+                    applicatie.switchToPatiëntlijst();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                     Alert alert = new Alert(Alert.AlertType.ERROR);
