@@ -156,7 +156,37 @@ public class Applicatie extends Application {
     public void openPatiëntPagina(Patiënt patiënt) {
         patiëntscherm = new Patiëntscherm(this);
         root.setCenter(patiëntscherm.createPatiëntgegevensscherm(patiënt));
+
+        TableView<Bloedonderzoek> bloedonderzoekTableView = patiëntscherm.getBloedonderzoekTableView();
+
+        bloedonderzoekTableView.setOnMouseClicked(event -> {
+            if (event.getClickCount() == 2) {
+                Bloedonderzoek selectedBloedonderzoek = bloedonderzoekTableView.getSelectionModel().getSelectedItem();
+                if (selectedBloedonderzoek != null) {
+                    try {
+                        ResultSet onderzoekuitslagResultSet = db.getBloodTestResult(selectedBloedonderzoek.getId());
+
+                        Onderzoekuitslag onderzoekuitslag = null;
+
+                        if (onderzoekuitslagResultSet.next()) {
+                            onderzoekuitslag = new Onderzoekuitslag(
+                                    onderzoekuitslagResultSet.getInt("id"),
+                                    onderzoekuitslagResultSet.getInt("test_id"),
+                                    onderzoekuitslagResultSet.getInt("technician_id"),
+                                    onderzoekuitslagResultSet.getString("result"),
+                                    onderzoekuitslagResultSet.getDate("result_date").toLocalDate()
+                            );
+                        }
+
+                        openBloedonderzoekPagina(selectedBloedonderzoek, onderzoekuitslag);
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
+
 
     public void switchToStartscherm() {
         root.setCenter(startscherm.createStartscherm());

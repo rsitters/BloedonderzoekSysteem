@@ -5,7 +5,9 @@ import com.example.bloedonderzoeksyteem.Applicatie;
 import com.example.bloedonderzoeksyteem.models.Bloedonderzoek;
 import com.example.bloedonderzoeksyteem.models.Dokter;
 import com.example.bloedonderzoeksyteem.models.Patiënt;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -15,6 +17,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
@@ -26,11 +30,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Patiëntscherm {
-
     private Database db;
     private Applicatie applicatie;
     private Label nameValueLabel;
@@ -39,9 +41,9 @@ public class Patiëntscherm {
     private Label addressValueLabel;
     private Label phoneNumberValueLabel;
     private Label emailValueLabel;
+    private TableView<Bloedonderzoek> bloedonderzoekTableView;
     private VBox onderzoekenBox;
     private DateTimeFormatter formatter;
-
 
     public Patiëntscherm(Applicatie applicatie) {
         this.applicatie = applicatie;
@@ -50,7 +52,6 @@ public class Patiëntscherm {
 
     public BorderPane createPatiëntgegevensscherm(Patiënt patiënt) {
         BorderPane borderPane = new BorderPane();
-        borderPane.setPadding(new Insets(10));
 
         try {
             db = new Database();
@@ -58,10 +59,34 @@ public class Patiëntscherm {
             throw new RuntimeException(e);
         }
 
+        HBox topbar = createTopbar();
+        GridPane gegevensBox = createGegevensBox(patiënt);
+        HBox knoppenBox = createKnoppenBox(patiënt);
+        VBox onderzoekenBox = createOnderzoekenBox(patiënt);
 
+        VBox contentBox = new VBox(topbar, createDivider(), gegevensBox,  knoppenBox, createDivider(), onderzoekenBox);
+        borderPane.setCenter(contentBox);
+
+        return borderPane;
+    }
+
+    private VBox createDivider() {
+        Line divider = new Line();
+        divider.setStroke(Color.BLACK);
+        divider.setStrokeWidth(2);
+        divider.setStartX(0); // Verander de Y-coördinaat van het beginpunt van de lijn
+        divider.setEndX(780);  // Verander de Y-coördinaat van het eindpunt van de lijn
+        VBox dividerContainer = new VBox(divider);
+        dividerContainer.setPadding(new Insets(0, 10, 0, 10)); // Voeg padding toe aan de boven- en onderkant
+
+        return dividerContainer;
+    }
+
+
+    private HBox createTopbar(){
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_RIGHT);
-        topBar.setSpacing(10);
+        topBar.setPadding(new Insets(10));
 
         Label titleLabel = new Label("Patiëntgegevens");
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
@@ -73,8 +98,6 @@ public class Patiëntscherm {
         leftBox.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(leftBox, Priority.ALWAYS);
         topBar.getChildren().addAll(leftBox, backButton);
-        borderPane.setTop(topBar);
-
         backButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -82,8 +105,11 @@ public class Patiëntscherm {
             }
         });
 
-
+        return topBar;
+    }
+    private GridPane createGegevensBox(Patiënt patiënt) {
         GridPane gegevensGrid = new GridPane();
+        gegevensGrid.setPadding(new Insets(10));
         gegevensGrid.setVgap(10);
         gegevensGrid.setHgap(10);
         gegevensGrid.setAlignment(Pos.CENTER_LEFT);
@@ -117,28 +143,26 @@ public class Patiëntscherm {
         emailLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         this.emailValueLabel = new Label(patiënt.getEmailAddress());
 
-        gegevensGrid.add(titlePersonal, 0, 0, 3, 1);
+        gegevensGrid.add(titlePersonal, 0, 0, 4, 1);
         gegevensGrid.add(nameLabel, 0, 1);
         gegevensGrid.add(nameValueLabel, 1, 1);
         gegevensGrid.add(birthDateLabel, 0, 2);
         gegevensGrid.add(birthDateValueLabel, 1, 2);
         gegevensGrid.add(bsnLabel, 0, 3);
         gegevensGrid.add(bsnValueLabel, 1, 3);
-        gegevensGrid.add(addressLabel, 0, 4);
-        gegevensGrid.add(addressValueLabel, 1, 4);
-        gegevensGrid.add(phoneNumberLabel, 0, 5);
-        gegevensGrid.add(phoneNumberValueLabel, 1, 5);
-        gegevensGrid.add(emailLabel, 0, 6);
-        gegevensGrid.add(emailValueLabel, 1, 6);
+        gegevensGrid.add(addressLabel, 2, 1);
+        gegevensGrid.add(addressValueLabel, 3, 1);
+        gegevensGrid.add(phoneNumberLabel, 2, 2);
+        gegevensGrid.add(phoneNumberValueLabel, 3, 2);
+        gegevensGrid.add(emailLabel, 2, 3);
+        gegevensGrid.add(emailValueLabel, 3, 3);
 
-        borderPane.setLeft(gegevensGrid);
+        return gegevensGrid;
+    }
 
-        this.onderzoekenBox = new VBox();
-        updateOnderzoekenBox(patiënt.getId());
-        onderzoekenBox.setAlignment(Pos.CENTER_LEFT);
-        borderPane.setRight(onderzoekenBox);
-
+    private HBox createKnoppenBox(Patiënt patiënt) {
         HBox knoppenBox = new HBox();
+        knoppenBox.setPadding(new Insets(0,10,10,10));
         knoppenBox.setSpacing(10);
         knoppenBox.setAlignment(Pos.CENTER_RIGHT);
 
@@ -174,9 +198,106 @@ public class Patiëntscherm {
         });
 
         knoppenBox.getChildren().addAll(wijzigenButton, verwijderenButton);
-        borderPane.setBottom(knoppenBox);
 
-        return borderPane;
+        return knoppenBox;
+    }
+
+    private VBox createOnderzoekenBox(Patiënt patiënt) {
+        this.onderzoekenBox = new VBox();
+        onderzoekenBox.setPadding(new Insets(10));
+        onderzoekenBox.setSpacing(10);
+        onderzoekenBox.setAlignment(Pos.CENTER_LEFT);
+
+        Label titleResearch = new Label("Onderzoeken");
+        titleResearch.setFont(Font.font("Arial", FontWeight.BOLD, 20));
+
+        bloedonderzoekTableView = createOnderzoekTableView(patiënt.getId());
+
+        String addButtonStyle = "-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+        Button addResearchButton = new Button("Onderzoek toevoegen");
+        addResearchButton.setStyle(addButtonStyle);
+
+        addResearchButton.setOnAction(e -> {
+            openToevoegenPopup(patiënt.getId());
+        });
+
+        HBox buttonContainer = new HBox(addResearchButton);
+        buttonContainer.setAlignment(Pos.CENTER_RIGHT);
+
+        onderzoekenBox.getChildren().addAll(titleResearch, bloedonderzoekTableView, buttonContainer);
+        return onderzoekenBox;
+    }
+
+    private void updateOnderzoekenBox(int patientId) {
+        ObservableList<Bloedonderzoek> newItems = FXCollections.observableArrayList();
+
+        try {
+            ResultSet rs = db.getBloodTestsForPatient(patientId);
+            while (rs.next()) {
+                Bloedonderzoek bloedonderzoek = new Bloedonderzoek(rs);
+                newItems.add(bloedonderzoek);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        bloedonderzoekTableView.getItems().setAll(newItems);
+    }
+
+    public TableView<Bloedonderzoek> createOnderzoekTableView(int patientId) {
+        TableView<Bloedonderzoek> tableView = new TableView<>();
+        tableView.setEditable(true);
+
+        TableColumn<Bloedonderzoek, Integer> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        TableColumn<Bloedonderzoek, String> typeColumn = new TableColumn<>("Type");
+        typeColumn.setCellValueFactory(new PropertyValueFactory<>("testType"));
+
+        TableColumn<Bloedonderzoek, LocalDate> dateColumn = new TableColumn<>("Datum");
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("testDate"));
+        dateColumn.setCellFactory(column -> new TableCell<Bloedonderzoek, LocalDate>() {
+            private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+
+            @Override
+            protected void updateItem(LocalDate date, boolean empty) {
+                super.updateItem(date, empty);
+                if (empty || date == null) {
+                    setText(null);
+                } else {
+                    setText(formatter.format(date));
+                }
+            }
+        });
+
+        TableColumn<Bloedonderzoek, Integer> tubeColumn = new TableColumn<>("Aantal buisjes");
+        tubeColumn.setCellValueFactory(new PropertyValueFactory<>("tubeCount"));
+
+        TableColumn<Bloedonderzoek, String> doctorColumn = new TableColumn<>("Dokter");
+        doctorColumn.setCellValueFactory(cellData -> {
+            Integer doctorId = cellData.getValue().getDoctorId();
+            String doctorName = db.getDoctorName(doctorId);
+            return new SimpleStringProperty(doctorName);
+        });
+
+
+        tableView.getColumns().addAll(idColumn, typeColumn, dateColumn, tubeColumn, doctorColumn);
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+
+        try {
+            ResultSet rs = db.getBloodTestsForPatient(patientId);
+            while (rs.next()) {
+                Bloedonderzoek bloedonderzoek = new Bloedonderzoek(rs);
+                tableView.getItems().add(bloedonderzoek);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return tableView;
+    }
+    public TableView<Bloedonderzoek> getBloedonderzoekTableView() {
+        return bloedonderzoekTableView;
     }
 
     public void openWijzigingsPopup(Patiënt patiënt) {
@@ -297,7 +418,6 @@ public class Patiëntscherm {
         popupStage.showAndWait();
     }
 
-
     private void updateUIWithPatientData(Patiënt patiënt) {
         this.nameValueLabel.setText(patiënt.getFirstName() + " " + patiënt.getLastName());
         this.birthDateValueLabel.setText(patiënt.getBirthDate().format(formatter));
@@ -306,72 +426,6 @@ public class Patiëntscherm {
         this.phoneNumberValueLabel.setText(patiënt.getPhoneNumber());
         this.emailValueLabel.setText(patiënt.getEmailAddress());
     }
-
-    public TableView<Bloedonderzoek> createOnderzoekTableView(int patientId) {
-        TableView<Bloedonderzoek> tableView = new TableView<>();
-        tableView.setEditable(true);
-        tableView.setMaxSize(400, 180);
-
-        TableColumn<Bloedonderzoek, Integer> idColumn = new TableColumn<>("ID");
-        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-
-        TableColumn<Bloedonderzoek, String> typeColumn = new TableColumn<>("Type");
-        typeColumn.setCellValueFactory(new PropertyValueFactory<>("testType"));
-
-        TableColumn<Bloedonderzoek, LocalDate> dateColumn = new TableColumn<>("Datum");
-        dateColumn.setCellValueFactory(new PropertyValueFactory<>("testDate"));
-        dateColumn.setCellFactory(column -> new TableCell<Bloedonderzoek, LocalDate>() {
-            private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
-            @Override
-            protected void updateItem(LocalDate date, boolean empty) {
-                super.updateItem(date, empty);
-                if (empty || date == null) {
-                    setText(null);
-                } else {
-                    setText(formatter.format(date));
-                }
-            }
-        });
-
-        tableView.getColumns().addAll(idColumn, typeColumn, dateColumn);
-        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        try {
-            ResultSet rs = db.getBloodTestsForPatient(patientId);
-            while (rs.next()) {
-                Bloedonderzoek bloedonderzoek = new Bloedonderzoek(rs);
-                tableView.getItems().add(bloedonderzoek);
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return tableView;
-    }
-
-    private void updateOnderzoekenBox(int patientId) {
-        onderzoekenBox.getChildren().clear();
-
-        Label titleResearch = new Label("Onderzoeken");
-        titleResearch.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-
-        TableView<Bloedonderzoek> tableView = createOnderzoekTableView(patientId);
-
-        String addButtonStyle = "-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
-        Button addResearchButton = new Button("Onderzoek toevoegen");
-        addResearchButton.setStyle(addButtonStyle);
-
-        addResearchButton.setOnAction(e -> {
-            openToevoegenPopup(patientId);
-        });
-
-
-        HBox buttonContainer = new HBox(addResearchButton);
-        buttonContainer.setAlignment(Pos.CENTER_RIGHT);
-        onderzoekenBox.getChildren().addAll(titleResearch, tableView, buttonContainer);
-    }
-
     public void openToevoegenPopup(int patientId) {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
@@ -459,7 +513,5 @@ public class Patiëntscherm {
         popupStage.setScene(scene);
         popupStage.showAndWait();
     }
-
 }
-
 
