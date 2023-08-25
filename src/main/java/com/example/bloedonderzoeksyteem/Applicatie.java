@@ -36,49 +36,68 @@ public class Applicatie extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        setupUI(stage);
+        setupDatabase();
+        stage.show();
+    }
+
+    private void setupUI(Stage stage) {
         root = new BorderPane();
         Scene scene = new Scene(root, 800, 600);
         stage.setResizable(false);
-        stage.setTitle("");
+        stage.setTitle(TITLE);
         stage.setScene(scene);
 
+        setupTopBar();
+        setupBottomBar();
+
+        startscherm = new Startscherm(this);
+        root.setCenter(startscherm.createStartscherm());
+    }
+
+    private void setupTopBar() {
         HBox topBar = new HBox();
         topBar.setPadding(new Insets(10));
         topBar.setBackground(new Background(new BackgroundFill(Color.web(BACKGROUND_COLOR), CornerRadii.EMPTY, Insets.EMPTY)));
         topBar.setAlignment(Pos.CENTER_RIGHT);
         topBar.setSpacing(10);
+
         Text titleText = new Text(TITLE);
-        Button returnButton = new Button("HOME");
         titleText.setStyle("-fx-font-size: 30; -fx-font-weight: bold; -fx-fill: WHITE");
-        returnButton.setStyle("-fx-background-color: WHITE; -fx-text-fill: BLACK;  -fx-font-weight: bold; -fx-padding: 8px 16px;");
+
+        Button returnButton = new Button("HOME");
+        returnButton.setStyle("-fx-background-color: WHITE; -fx-text-fill: BLACK; -fx-font-weight: bold; -fx-padding: 8px 16px;");
         HBox.setHgrow(returnButton, Priority.ALWAYS);
+
         StackPane leftBox = new StackPane(titleText);
         leftBox.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(leftBox, Priority.ALWAYS);
+
         topBar.getChildren().addAll(leftBox, returnButton);
         root.setTop(topBar);
 
-        startscherm = new Startscherm(this);
-        root.setCenter(startscherm.createStartscherm());
+        returnButton.setOnAction(event -> switchToStartscherm());
+    }
 
+    private void setupBottomBar() {
         HBox bottomBar = new HBox();
         bottomBar.setPadding(new Insets(10));
         bottomBar.setBackground(new Background(new BackgroundFill(Color.web(BACKGROUND_COLOR), CornerRadii.EMPTY, Insets.EMPTY)));
         bottomBar.setStyle("-fx-alignment: center");
+
         bottomText = new Text(AUTHOR);
         bottomText.setStyle("-fx-font-size: 15; -fx-font-weight: bold; -fx-fill: WHITE");
+
         bottomBar.getChildren().add(bottomText);
         root.setBottom(bottomBar);
+    }
 
-        returnButton.setOnAction(event -> switchToStartscherm());
-
+    private void setupDatabase() {
         try {
             db = new Database();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        stage.show();
     }
 
     public void switchToPatiëntlijst() {
@@ -139,7 +158,6 @@ public class Applicatie extends Application {
         root.setCenter(patiëntscherm.createPatiëntgegevensscherm(patiënt));
     }
 
-
     public void switchToStartscherm() {
         root.setCenter(startscherm.createStartscherm());
     }
@@ -148,4 +166,3 @@ public class Applicatie extends Application {
         launch();
     }
 }
-

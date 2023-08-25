@@ -10,9 +10,9 @@ public class Database {
     private PreparedStatement selectBloodTestResult;
     private PreparedStatement insertStatement;
     private PreparedStatement deleteStatement;
-    private PreparedStatement deleteBloodtestStatement;
     private  PreparedStatement updateStatement;
     private PreparedStatement insertBloodTestStatement;
+    private PreparedStatement insertResultStatement;
 
     public Database() {
         String user = "root";
@@ -25,9 +25,9 @@ public class Database {
             this.selectBloodTestResult = conn.prepareStatement("SELECT * FROM test_result WHERE test_id = ?");
             this.insertStatement = conn.prepareStatement("INSERT INTO patient (firstname, lastname, birthdate, bsn, address, email, phone) VALUES (?, ?, ?, ?, ?, ?, ?)");
             this.deleteStatement = conn.prepareStatement("DELETE FROM patient WHERE id = ?");
-            this.deleteBloodtestStatement = conn.prepareStatement("DELETE FROM blood_test WHERE patient_id = ?");
             this.updateStatement = conn.prepareStatement("UPDATE patient SET firstname = ?, lastname = ?, birthdate = ?, bsn = ?, address = ?, email = ?, phone = ? WHERE id = ?");
             this.insertBloodTestStatement = conn.prepareStatement("INSERT INTO blood_test (patient_id, test_type, tube_count, test_date, doctor_id) VALUES (?, ?, ?, ?, ?)");
+            this.insertResultStatement = conn.prepareStatement("INSERT INTO test_result (test_id, result, result_date, technician_id) VALUES(?,?,?,?)");
         } catch (SQLException e) {
             System.out.println("Kan geen verbinding maken!");
         }
@@ -43,6 +43,10 @@ public class Database {
 
     public ResultSet getAllDoctors() throws  SQLException{
         return stm.executeQuery("SELECT * FROM doctor");
+    }
+
+    public ResultSet getAllLaborants() throws  SQLException{
+        return stm.executeQuery("SELECT * FROM lab_technician");
     }
 
     public ResultSet getBloodTestsForPatient(int patientId) throws SQLException {
@@ -70,10 +74,8 @@ public class Database {
     }
 
     public void deletePatient(int patientId) throws SQLException {
-        deleteBloodtestStatement.setInt(1, patientId);
         deleteStatement.setInt(1, patientId);
 
-        deleteBloodtestStatement.executeUpdate();
         deleteStatement.executeUpdate();
     }
 
@@ -90,7 +92,7 @@ public class Database {
         updateStatement.executeUpdate();
     }
 
-    public void addResearch(int patientId, String testType, int numberOfTubes, Date testDate, int doctor) throws SQLException {{
+    public void addResearch(int patientId, String testType, int numberOfTubes, Date testDate, int doctor) throws SQLException {
             insertBloodTestStatement.setInt(1, patientId);
             insertBloodTestStatement.setString(2, testType);
             insertBloodTestStatement.setInt(3, numberOfTubes);
@@ -98,7 +100,15 @@ public class Database {
             insertBloodTestStatement.setInt(5, doctor);
 
             insertBloodTestStatement.executeUpdate();
-        }
+    }
+
+    public void addResult(int testId, String result, Date resultDate, int laborant) throws SQLException{
+        insertResultStatement.setInt(1, testId);
+        insertResultStatement.setString(2, result);
+        insertResultStatement.setDate(3, resultDate);
+        insertResultStatement.setInt(4, laborant);
+
+        insertResultStatement.executeUpdate();
     }
 
     public String getDoctorName(int doctorId) {
