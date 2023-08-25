@@ -139,5 +139,18 @@ public class Database {
         return "";
     }
 
+    public String getLaborantName(int laborantId) {
+        try {
+            ResultSet resultSet = stm.executeQuery("SELECT * FROM lab_technician WHERE id = " + laborantId);
+            if (resultSet.next()) {
+                String firstName = resultSet.getString("firstname");
+                String lastName = resultSet.getString("lastname");
+                return firstName + " " + lastName;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }
 

@@ -255,6 +255,16 @@ public class Patiëntscherm {
             String email = emailField.getText();
             String phone = phoneField.getText();
 
+            if (firstName.isEmpty() || lastName.isEmpty() || birthDate == null ||
+                    bsn.isEmpty() || address.isEmpty() || email.isEmpty() || phone.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Waarschuwing");
+                alert.setHeaderText("Controleer alle velden");
+                alert.setContentText("Vul alle velden in voordat u de patiënt wijzigt.");
+                alert.showAndWait();
+                return;
+            }
+
             patiënt.setFirstName(firstName);
             patiënt.setLastName(lastName);
             patiënt.setBirthDate(birthDate);
@@ -405,45 +415,42 @@ public class Patiëntscherm {
             e.printStackTrace();
         }
 
-
         gridPane.add(doctorLabel, 0, 3);
         gridPane.add(doctorComboBox, 1, 3);
 
         Button saveButton = new Button("Opslaan");
         saveButton.setOnAction(event -> {
             String selectedType = typeTextField.getText();
-            Integer buisjes = Integer.parseInt(buisjesTextField.getText());
+            String buisjesText = buisjesTextField.getText();
             LocalDate testDatum = datumPicker.getValue();
-            Dokter selectedDoctor = doctorComboBox.getValue(); // Change the data type to Dokter
+            Dokter selectedDoctor = doctorComboBox.getValue();
 
-            if (selectedDoctor != null) {
-                Integer selectedDoctorId = selectedDoctor.getId(); // Get the ID of the selected doctor
-
-                try {
-                    // First, add the blood test to the database
-                    db.addResearch(patientId, selectedType, buisjes, Date.valueOf(testDatum), selectedDoctorId);
-
-                    // Update the UI with the new blood test data
-                    updateOnderzoekenBox(patientId);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    // Show an error message if something goes wrong
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Fout");
-                    alert.setHeaderText("Fout bij toevoegen van onderzoek");
-                    alert.setContentText("Er is een fout opgetreden bij het toevoegen van het onderzoek. Probeer het opnieuw.");
-                    alert.showAndWait();
-                }
-
-                popupStage.close();
-            } else {
-                // Handle case where no doctor is selected
+            if (selectedType.isEmpty() || buisjesText.isEmpty() || testDatum == null || selectedDoctor == null) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Waarschuwing");
-                alert.setHeaderText("Geen dokter geselecteerd");
-                alert.setContentText("Selecteer een dokter voordat u het onderzoek opslaat.");
+                alert.setHeaderText("Controleer alle velden");
+                alert.setContentText("Vul alle velden in voordat u het onderzoek toevoegt.");
+                alert.showAndWait();
+                return;
+            }
+
+            Integer buisjes = Integer.parseInt(buisjesText);
+            Integer selectedDoctorId = selectedDoctor.getId();
+
+            try {
+                db.addResearch(patientId, selectedType, buisjes, Date.valueOf(testDatum), selectedDoctorId);
+
+                updateOnderzoekenBox(patientId);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Fout");
+                alert.setHeaderText("Fout bij toevoegen van onderzoek");
+                alert.setContentText("Er is een fout opgetreden bij het toevoegen van het onderzoek. Probeer het opnieuw.");
                 alert.showAndWait();
             }
+
+            popupStage.close();
         });
 
         gridPane.add(saveButton, 1, 4);
@@ -452,6 +459,7 @@ public class Patiëntscherm {
         popupStage.setScene(scene);
         popupStage.showAndWait();
     }
+
 }
 
 

@@ -2,10 +2,7 @@ package com.example.bloedonderzoeksyteem.schermen;
 
 import com.example.bloedonderzoeksyteem.Applicatie;
 import com.example.bloedonderzoeksyteem.Database;
-import com.example.bloedonderzoeksyteem.models.Bloedonderzoek;
-import com.example.bloedonderzoeksyteem.models.Dokter;
-import com.example.bloedonderzoeksyteem.models.Laborant;
-import com.example.bloedonderzoeksyteem.models.Onderzoekuitslag;
+import com.example.bloedonderzoeksyteem.models.*;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -141,12 +138,18 @@ public class Onderzoekscherm {
             String formattedResultDate = onderzoekuitslag.getResultDate().format(formatter);
             Label resultDateValue = new Label(formattedResultDate);
 
+            Label laborantLabel = new Label("Laborant: ");
+            laborantLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+            Label laborantValueLabel = new Label(db.getLaborantName(onderzoekuitslag.getTechnicianId()));
+
             rightGrid.add(uitslagIdLabel, 0, 1);
             rightGrid.add(uitslagIdValue, 1, 1);
             rightGrid.add(resultLabel, 0, 2);
             rightGrid.add(resultValue, 1, 2);
             rightGrid.add(resultDateLabel, 0, 3);
             rightGrid.add(resultDateValue, 1, 3);
+            rightGrid.add(laborantLabel,0,4);
+            rightGrid.add(laborantValueLabel,1,4);
         } else {
             Label geenUitslagLabel = new Label("Geen uitslag bekend");
             String buttonStyle = "-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
@@ -205,6 +208,7 @@ public class Onderzoekscherm {
                 laborantsList.add(laborant);
             }
             laborantComboBox.setItems(FXCollections.observableArrayList(laborantsList));
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -215,35 +219,32 @@ public class Onderzoekscherm {
         Button saveButton = new Button("Opslaan");
         saveButton.setOnAction(event -> {
             String result = uitslagTextField.getText();
-            LocalDate testDatum = datumPicker.getValue();
-            Laborant selectedLaborant = laborantComboBox.getValue(); // Change the data type to Laborant
+            LocalDate resultDatum = datumPicker.getValue();
+            Laborant selectedLaborant = laborantComboBox.getValue();
 
-            if (selectedLaborant != null) {
-                Integer selectedLaborantId = selectedLaborant.getId(); // Get the ID of the selected laborant
-
-                try {
-                    // First, add the result to the database
-                    db.addResult(bloedonderzoek.getId(), result, Date.valueOf(testDatum), selectedLaborantId);
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    // Show an error message if something goes wrong
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Fout");
-                    alert.setHeaderText("Fout bij toevoegen van uitslag");
-                    alert.setContentText("Er is een fout opgetreden bij het toevoegen van de uitslag. Probeer het opnieuw.");
-                    alert.showAndWait();
-                }
-
-                popupStage.close();
-            } else {
-                // Handle case where no laborant is selected
+            if (result.isEmpty() || resultDatum == null || selectedLaborant == null) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Waarschuwing");
-                alert.setHeaderText("Geen laborant geselecteerd");
-                alert.setContentText("Selecteer een laborant voordat u het onderzoek opslaat.");
+                alert.setHeaderText("Controleer alle velden");
+                alert.setContentText("Vul alle velden in voordat u de uitslag toevoegt.");
+                alert.showAndWait();
+                return;
+            }
+
+            Integer selectedLaborantId = selectedLaborant.getId();
+
+            try {
+                db.addResult(bloedonderzoek.getId(), result, Date.valueOf(resultDatum), selectedLaborantId);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Fout");
+                alert.setHeaderText("Fout bij toevoegen van uitslag");
+                alert.setContentText("Er is een fout opgetreden bij het toevoegen van de uitslag. Probeer het opnieuw.");
                 alert.showAndWait();
             }
+
+            popupStage.close();
         });
 
         gridPane.add(saveButton, 1, 4);

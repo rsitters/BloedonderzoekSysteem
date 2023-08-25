@@ -107,7 +107,7 @@ public class Patiëntenlijst {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.setTitle("Patiënt Toevoegen");
-        popupStage.setResizable(false); // Voorkomt dat de pop-up schaalbaar is
+        popupStage.setResizable(false);
 
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(10));
@@ -121,6 +121,7 @@ public class Patiëntenlijst {
         TextField firstNameField = new TextField();
         gridPane.add(firstNameLabel, 0, 0);
         gridPane.add(firstNameField, 1, 0);
+
 
         Label lastNameLabel = new Label("Achternaam:");
         lastNameLabel.setStyle(labelStyle);
@@ -169,6 +170,15 @@ public class Patiëntenlijst {
             String address = addressField.getText();
             String email = emailField.getText();
             String phone = phoneField.getText();
+
+            if (firstName.isEmpty() || lastName.isEmpty() || birthDate == null || bsn.isEmpty() || address.isEmpty() || email.isEmpty() || phone.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Waarschuwing");
+                alert.setHeaderText("Controleer alle velden");
+                alert.setContentText("Vul alle velden in voordat u de patiënt toevoegt.");
+                alert.showAndWait();
+                return;
+            }
 
             try {
                 db.addPatient(firstName, lastName, Date.valueOf(birthDate), bsn, address, email, phone);
