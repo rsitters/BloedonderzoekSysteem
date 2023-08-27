@@ -170,10 +170,10 @@ public class Onderzoekscherm {
             rightGrid.add(uitslagIdValue, 1, 1);
             rightGrid.add(resultLabel, 0, 2);
             rightGrid.add(resultValue, 1, 2);
-            rightGrid.add(resultDateLabel, 2, 1);
-            rightGrid.add(resultDateValue, 3, 1);
-            rightGrid.add(laborantLabel,2,2);
-            rightGrid.add(laborantValueLabel,3,2);
+            rightGrid.add(laborantLabel,2,1);
+            rightGrid.add(laborantValueLabel,3,1);
+            rightGrid.add(resultDateLabel, 2, 2);
+            rightGrid.add(resultDateValue, 3, 2);
         } else {
             Label geenUitslagLabel = new Label("Geen uitslag bekend");
             rightGrid.add(geenUitslagLabel, 0, 1);

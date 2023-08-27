@@ -437,22 +437,28 @@ public class Patiëntscherm {
         gridPane.setHgap(10);
         gridPane.setVgap(10);
 
+        String labelStyle = "-fx-font-weight: bold;";
+
         Label typeLabel = new Label("Type test:");
+        typeLabel.setStyle(labelStyle);
         TextField typeTextField = new TextField();
         gridPane.add(typeLabel, 0, 0);
         gridPane.add(typeTextField, 1, 0);
 
         Label buisjesLabel = new Label("Aantal buisjes:");
+        buisjesLabel.setStyle(labelStyle);
         TextField buisjesTextField = new TextField();
         gridPane.add(buisjesLabel, 0, 1);
         gridPane.add(buisjesTextField, 1, 1);
 
         Label datumLabel = new Label("Testdatum:");
+        datumLabel.setStyle(labelStyle);
         DatePicker datumPicker = new DatePicker();
         gridPane.add(datumLabel, 0, 2);
         gridPane.add(datumPicker, 1, 2);
 
         Label doctorLabel = new Label("Dokter:");
+        doctorLabel.setStyle(labelStyle);
         ComboBox<Dokter> doctorComboBox = new ComboBox<>();
         try {
             ResultSet doctorsResultSet = db.getAllDoctors();
@@ -506,7 +512,9 @@ public class Patiëntscherm {
 
             popupStage.close();
         });
-
+        String saveButtonStyle = "-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+        saveButton.setStyle(saveButtonStyle);
+        GridPane.setHalignment(saveButton, HPos.RIGHT);
         gridPane.add(saveButton, 1, 4);
 
         Scene scene = new Scene(gridPane);

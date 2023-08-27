@@ -6,6 +6,7 @@ import com.example.bloedonderzoeksyteem.models.*;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -162,22 +163,28 @@ public class Onderzoekuitslagscherm {
         gridPane.setHgap(10);
         gridPane.setVgap(10);
 
+        String labelStyle = "-fx-font-weight: bold;";
+
         Label idLabel = new Label("Test ID:");
+        idLabel.setStyle(labelStyle);
         Label idValue = new Label(bloedonderzoek.getId().toString());
         gridPane.add(idLabel, 0, 0);
         gridPane.add(idValue, 1, 0);
 
-        Label UitslagLabel = new Label("Uitslag:");
+        Label uitslagLabel = new Label("Uitslag:");
+        uitslagLabel.setStyle(labelStyle);
         TextField uitslagTextField = new TextField();
-        gridPane.add(UitslagLabel, 0, 1);
+        gridPane.add(uitslagLabel, 0, 1);
         gridPane.add(uitslagTextField, 1, 1);
 
         Label datumLabel = new Label("Uitslag datum:");
+        datumLabel.setStyle(labelStyle);
         DatePicker datumPicker = new DatePicker();
         gridPane.add(datumLabel, 0, 2);
         gridPane.add(datumPicker, 1, 2);
 
         Label laborantLabel = new Label("Laborant:");
+        laborantLabel.setStyle(labelStyle);
         ComboBox<Laborant> laborantComboBox = new ComboBox<>();
         try {
             ResultSet laborantResultSet = db.getAllLaborants();
@@ -231,7 +238,9 @@ public class Onderzoekuitslagscherm {
                 alert.showAndWait();
             }
         });
-
+        String saveButtonStyle = "-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+        saveButton.setStyle(saveButtonStyle);
+        GridPane.setHalignment(saveButton, HPos.RIGHT);
         gridPane.add(saveButton, 1, 4);
 
         Scene scene = new Scene(gridPane);
