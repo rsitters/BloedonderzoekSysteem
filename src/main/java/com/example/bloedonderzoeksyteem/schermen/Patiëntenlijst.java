@@ -34,7 +34,7 @@ public class Patiëntenlijst {
         }
 
         Label titleLabel = new Label("Patiëntenlijst");
-        titleLabel.setStyle("-fx-font-size: 20; -fx-font-weight: bold; -fx-padding: 10px;");
+        titleLabel.setStyle("-fx-font-size: 24; -fx-font-weight: bold; -fx-padding: 10px;");
 
         patiëntTableView = createPatiëntTableView();
 

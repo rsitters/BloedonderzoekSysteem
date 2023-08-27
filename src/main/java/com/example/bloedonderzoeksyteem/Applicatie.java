@@ -18,6 +18,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Applicatie extends Application {
 
@@ -33,6 +35,8 @@ public class Applicatie extends Application {
     private Onderzoekenlijst onderzoekenlijst;
     private Patiëntscherm patiëntscherm;
     private Onderzoekscherm onderzoekscherm;
+    private Onderzoekuitslagscherm onderzoekuitslagscherm;
+    private Patiënt currentPatiënt;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -139,7 +143,7 @@ public class Applicatie extends Application {
                             );
                         }
 
-                        openBloedonderzoekPagina(selectedBloedonderzoek, onderzoekuitslag);
+                        openBloedonderzoekuitslagPagina(selectedBloedonderzoek, onderzoekuitslag);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -153,8 +157,15 @@ public class Applicatie extends Application {
         root.setCenter(onderzoekscherm.createOnderzoekgegevensscherm(bloedonderzoek, onderzoekuitslag));
     }
 
+    public void openBloedonderzoekuitslagPagina(Bloedonderzoek bloedonderzoek, Onderzoekuitslag onderzoekuitslag) {
+        onderzoekuitslagscherm = new Onderzoekuitslagscherm(this);
+        root.setCenter(onderzoekuitslagscherm.createOnderzoekgegevensscherm(bloedonderzoek, onderzoekuitslag));
+    }
+
     public void openPatiëntPagina(Patiënt patiënt) {
+        currentPatiënt = patiënt;
         patiëntscherm = new Patiëntscherm(this);
+
         root.setCenter(patiëntscherm.createPatiëntgegevensscherm(patiënt));
 
         TableView<Bloedonderzoek> bloedonderzoekTableView = patiëntscherm.getBloedonderzoekTableView();
@@ -187,7 +198,9 @@ public class Applicatie extends Application {
         });
     }
 
-
+    public void openPatiëntPagina() {
+        openPatiëntPagina(currentPatiënt);
+    }
     public void switchToStartscherm() {
         root.setCenter(startscherm.createStartscherm());
     }
