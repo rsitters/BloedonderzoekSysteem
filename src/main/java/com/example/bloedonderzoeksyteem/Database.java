@@ -13,6 +13,7 @@ public class Database {
     private  PreparedStatement updateStatement;
     private PreparedStatement insertBloodTestStatement;
     private PreparedStatement insertResultStatement;
+    private PreparedStatement checkForResultStatement;
 
     public Database() {
         String user = "root";
@@ -28,6 +29,7 @@ public class Database {
             this.updateStatement = conn.prepareStatement("UPDATE patient SET firstname = ?, lastname = ?, birthdate = ?, bsn = ?, address = ?, email = ?, phone = ? WHERE id = ?");
             this.insertBloodTestStatement = conn.prepareStatement("INSERT INTO blood_test (patient_id, test_type, tube_count, test_date, doctor_id) VALUES (?, ?, ?, ?, ?)");
             this.insertResultStatement = conn.prepareStatement("INSERT INTO test_result (test_id, result, result_date, technician_id) VALUES(?,?,?,?)");
+            this.checkForResultStatement = conn.prepareStatement("SELECT COUNT(*) AS count FROM test_result WHERE test_id = ?");
         } catch (SQLException e) {
             System.out.println("Kan geen verbinding maken!");
         }
@@ -110,6 +112,26 @@ public class Database {
 
         insertResultStatement.executeUpdate();
     }
+    public boolean hasBloodTestResult(int bloodTestId) {
+        try {
+            checkForResultStatement.setInt(1, bloodTestId);
+
+            ResultSet resultSet = checkForResultStatement.executeQuery();
+
+            if (resultSet.next()) {
+                int count = resultSet.getInt("count");
+                return count > 0;
+            }
+
+            resultSet.close();
+            checkForResultStatement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
 
     public String getDoctorName(int doctorId) {
         try {

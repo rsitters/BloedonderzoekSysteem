@@ -11,6 +11,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
@@ -36,7 +38,7 @@ public class Onderzoekuitslagscherm {
 
     public BorderPane createOnderzoekgegevensscherm(Bloedonderzoek bloedonderzoek, Onderzoekuitslag onderzoekuitslag) {
         BorderPane borderPane = new BorderPane();
-        borderPane.setPadding(new Insets(10));
+//        borderPane.setPadding(new Insets(10));
 
         try {
             db = new Database();
@@ -44,12 +46,32 @@ public class Onderzoekuitslagscherm {
             throw new RuntimeException(e);
         }
 
+        HBox topbar = createTopbar();
+        GridPane onderzoekBox = createOnderzoeksBox(bloedonderzoek);
 
+        VBox contentBox = new VBox(topbar, createDivider(),onderzoekBox);
+        borderPane.setCenter(contentBox);
+
+        return borderPane;
+    }
+    private VBox createDivider() {
+        Line divider = new Line();
+        divider.setStroke(Color.BLACK);
+        divider.setStrokeWidth(2);
+        divider.setStartX(0); // Verander de Y-coördinaat van het beginpunt van de lijn
+        divider.setEndX(780);  // Verander de Y-coördinaat van het eindpunt van de lijn
+        VBox dividerContainer = new VBox(divider);
+        dividerContainer.setPadding(new Insets(0, 10, 0, 10)); // Voeg padding toe aan de boven- en onderkant
+
+        return dividerContainer;
+    }
+
+    private HBox createTopbar(){
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_RIGHT);
-        topBar.setSpacing(10);
+        topBar.setPadding(new Insets(10));
 
-        Label titleLabel = new Label("Onderzoekgegevens");
+        Label titleLabel = new Label("Uitslag toevoegen");
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         Button backButton = new Button("Terug");
         backButton.setStyle("-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;");
@@ -59,7 +81,6 @@ public class Onderzoekuitslagscherm {
         leftBox.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(leftBox, Priority.ALWAYS);
         topBar.getChildren().addAll(leftBox, backButton);
-        borderPane.setTop(topBar);
 
         backButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -68,7 +89,11 @@ public class Onderzoekuitslagscherm {
             }
         });
 
+        return topBar;
+    }
+    private GridPane createOnderzoeksBox(Bloedonderzoek bloedonderzoek){
         GridPane leftGrid = new GridPane();
+        leftGrid.setPadding(new Insets(10));
         leftGrid.setVgap(10);
         leftGrid.setHgap(10);
         leftGrid.setAlignment(Pos.CENTER_LEFT);
@@ -101,6 +126,14 @@ public class Onderzoekuitslagscherm {
         patientLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         Label patientValueLabel = new Label(db.getPatientName(bloedonderzoek.getPatientId()));
 
+        String buttonStyle = "-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+        Button enterUitslagButton = new Button("Uitslag invoeren");
+        enterUitslagButton.setStyle(buttonStyle);
+
+        enterUitslagButton.setOnAction(e -> {
+            openToevoegenPopup(bloedonderzoek);
+        });
+
         leftGrid.add(titleOnderzoek, 0, 0, 6, 1);
         leftGrid.add(testIdLabel,0,1);
         leftGrid.add(testIdValue,1,1);
@@ -108,67 +141,16 @@ public class Onderzoekuitslagscherm {
         leftGrid.add(testTypeValueLabel, 1, 2);
         leftGrid.add(tubeCountLabel, 0, 3);
         leftGrid.add(tubeCountValueLabel, 1, 3);
-        leftGrid.add(testDateLabel, 0, 4);
-        leftGrid.add(testDateValueLabel, 1, 4);
-        leftGrid.add(doctorLabel, 0, 5);
-        leftGrid.add(doctorValueLabel, 1, 5);
-        leftGrid.add(patientLabel, 0, 6);
-        leftGrid.add(patientValueLabel, 1, 6);
+        leftGrid.add(testDateLabel, 2, 1);
+        leftGrid.add(testDateValueLabel, 3, 1);
+        leftGrid.add(doctorLabel, 2, 2);
+        leftGrid.add(doctorValueLabel, 3, 2);
+        leftGrid.add(patientLabel, 2, 3);
+        leftGrid.add(patientValueLabel, 3, 3);
+        leftGrid.add(enterUitslagButton,3,4);
 
-        GridPane rightGrid = new GridPane();
-        rightGrid.setVgap(10);
-        rightGrid.setHgap(10);
-        rightGrid.setAlignment(Pos.CENTER_LEFT);
-
-        Label titleUitslag = new Label("Uitslag");
-        titleUitslag.setFont(Font.font("Arial", FontWeight.BOLD, 20));
-        rightGrid.add(titleUitslag, 0, 0, 3, 1);
-
-        if (onderzoekuitslag != null) {
-            Label uitslagIdLabel = new Label("Uitslag ID: ");
-            uitslagIdLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-            Label uitslagIdValue = new Label(onderzoekuitslag.getId().toString());
-
-            Label resultLabel = new Label("Resultaat: ");
-            resultLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-            Label resultValue = new Label(onderzoekuitslag.getResult());
-
-            Label resultDateLabel = new Label("Resultaatdatum: ");
-            resultDateLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-            String formattedResultDate = onderzoekuitslag.getResultDate().format(formatter);
-            Label resultDateValue = new Label(formattedResultDate);
-
-            Label laborantLabel = new Label("Laborant: ");
-            laborantLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-            Label laborantValueLabel = new Label(db.getLaborantName(onderzoekuitslag.getTechnicianId()));
-
-            rightGrid.add(uitslagIdLabel, 0, 1);
-            rightGrid.add(uitslagIdValue, 1, 1);
-            rightGrid.add(resultLabel, 0, 2);
-            rightGrid.add(resultValue, 1, 2);
-            rightGrid.add(resultDateLabel, 0, 3);
-            rightGrid.add(resultDateValue, 1, 3);
-            rightGrid.add(laborantLabel,0,4);
-            rightGrid.add(laborantValueLabel,1,4);
-        } else {
-            Label geenUitslagLabel = new Label("Geen uitslag bekend");
-            String buttonStyle = "-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
-            Button enterUitslagButton = new Button("Uitslag invoeren");
-            enterUitslagButton.setStyle(buttonStyle);
-            rightGrid.add(geenUitslagLabel, 0, 1);
-            rightGrid.add(enterUitslagButton,1,2);
-
-            enterUitslagButton.setOnAction(e -> {
-                openToevoegenPopup(bloedonderzoek);
-            });
-        }
-
-        borderPane.setLeft(leftGrid);
-        borderPane.setRight(rightGrid);
-
-        return borderPane;
+        return leftGrid;
     }
-
     public void openToevoegenPopup(Bloedonderzoek bloedonderzoek) {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
@@ -235,6 +217,11 @@ public class Onderzoekuitslagscherm {
 
             try {
                 db.addResult(bloedonderzoek.getId(), result, Date.valueOf(resultDatum), selectedLaborantId);
+
+                // Call switchToOnderzoeklijst() method here
+                applicatie.switchToOnderzoeklijst();
+
+                popupStage.close();
             } catch (SQLException e) {
                 e.printStackTrace();
                 Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -243,8 +230,6 @@ public class Onderzoekuitslagscherm {
                 alert.setContentText("Er is een fout opgetreden bij het toevoegen van de uitslag. Probeer het opnieuw.");
                 alert.showAndWait();
             }
-
-            popupStage.close();
         });
 
         gridPane.add(saveButton, 1, 4);

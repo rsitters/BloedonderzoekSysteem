@@ -75,7 +75,11 @@ public class Onderzoekenlijst {
             ResultSet rs = db.getAllBloodTests();
             while (rs.next()) {
                 Bloedonderzoek bloedonderzoek = new Bloedonderzoek(rs);
-                tableView.getItems().add(bloedonderzoek);
+
+                // Check if the blood test has a result
+                if (!db.hasBloodTestResult(bloedonderzoek.getId())) {
+                    tableView.getItems().add(bloedonderzoek);
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
