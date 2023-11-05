@@ -16,6 +16,7 @@ public class Startscherm {
         this.applicatie = applicatie;
     }
 
+    //Methode die startscherm maakt en terug geeft als BorderPane
     public BorderPane createStartscherm() {
         BorderPane borderPane = new BorderPane();
 
@@ -33,6 +34,7 @@ public class Startscherm {
 
         borderPane.setCenter(buttonBox);
 
+        //Actie op te schakelen naar patiëntenlijst bij klikken op knop
         patiëntButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -40,6 +42,7 @@ public class Startscherm {
             }
         });
 
+        //Actie om te schakelen naar bloedonderzoekenlijst bij klikken op knop
         bloodResearchButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {

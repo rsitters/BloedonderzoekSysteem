@@ -37,9 +37,9 @@ public class Onderzoekuitslagscherm {
         this.formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     }
 
+    //Methode die Onderzoekuitslagscherm creërt en terug geeft als BorderPane
     public BorderPane createOnderzoekgegevensscherm(Bloedonderzoek bloedonderzoek, Onderzoekuitslag onderzoekuitslag) {
         BorderPane borderPane = new BorderPane();
-//        borderPane.setPadding(new Insets(10));
 
         try {
             db = new Database();
@@ -55,18 +55,21 @@ public class Onderzoekuitslagscherm {
 
         return borderPane;
     }
+
+    //Methode die scheidingslijn maakt
     private VBox createDivider() {
         Line divider = new Line();
         divider.setStroke(Color.BLACK);
         divider.setStrokeWidth(2);
-        divider.setStartX(0); // Verander de Y-coördinaat van het beginpunt van de lijn
-        divider.setEndX(780);  // Verander de Y-coördinaat van het eindpunt van de lijn
+        divider.setStartX(0);
+        divider.setEndX(780);
         VBox dividerContainer = new VBox(divider);
-        dividerContainer.setPadding(new Insets(0, 10, 0, 10)); // Voeg padding toe aan de boven- en onderkant
+        dividerContainer.setPadding(new Insets(0, 10, 0, 10));
 
         return dividerContainer;
     }
 
+    //Methode die bovenste balk maakt met titel en terugknop
     private HBox createTopbar(){
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_RIGHT);
@@ -92,6 +95,8 @@ public class Onderzoekuitslagscherm {
 
         return topBar;
     }
+
+    //Methode die een grid met onderzoekgegevens maakt
     private GridPane createOnderzoeksBox(Bloedonderzoek bloedonderzoek){
         GridPane leftGrid = new GridPane();
         leftGrid.setPadding(new Insets(10));
@@ -131,6 +136,8 @@ public class Onderzoekuitslagscherm {
         Button enterUitslagButton = new Button("Uitslag invoeren");
         enterUitslagButton.setStyle(buttonStyle);
 
+
+        //Zorgt ervoor dat een pop-up opent om uitslag toe te voegen
         enterUitslagButton.setOnAction(e -> {
             openToevoegenPopup(bloedonderzoek);
         });
@@ -152,6 +159,8 @@ public class Onderzoekuitslagscherm {
 
         return leftGrid;
     }
+
+    //Creërt een pop-up die het mogelijk maakt de uitslag toe te voegen
     public void openToevoegenPopup(Bloedonderzoek bloedonderzoek) {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
@@ -186,6 +195,7 @@ public class Onderzoekuitslagscherm {
         Label laborantLabel = new Label("Laborant:");
         laborantLabel.setStyle(labelStyle);
         ComboBox<Laborant> laborantComboBox = new ComboBox<>();
+        //Vult combobox met alle namen van laboranten
         try {
             ResultSet laborantResultSet = db.getAllLaborants();
             List<Laborant> laborantsList = new ArrayList<>();
@@ -206,11 +216,13 @@ public class Onderzoekuitslagscherm {
         gridPane.add(laborantComboBox, 1, 3);
 
         Button saveButton = new Button("Opslaan");
+        //Zorgt ervoor dat uitslag opgeslagen wordt in de database
         saveButton.setOnAction(event -> {
             String result = uitslagTextField.getText();
             LocalDate resultDatum = datumPicker.getValue();
             Laborant selectedLaborant = laborantComboBox.getValue();
 
+            //Checkt voor lege velden
             if (result.isEmpty() || resultDatum == null || selectedLaborant == null) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Waarschuwing");
@@ -225,7 +237,6 @@ public class Onderzoekuitslagscherm {
             try {
                 db.addResult(bloedonderzoek.getId(), result, Date.valueOf(resultDatum), selectedLaborantId);
 
-                // Call switchToOnderzoeklijst() method here
                 applicatie.switchToOnderzoeklijst();
 
                 popupStage.close();

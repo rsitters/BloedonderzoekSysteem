@@ -11,6 +11,7 @@ public class Onderzoekuitslag {
     private String result;
     private LocalDate result_date;
 
+    //Constructor voor het maken van een Onderzoekuitslag-object met opgegeven gegevens
     public Onderzoekuitslag(Integer id, Integer test_id, Integer technician_id, String result, LocalDate result_date) {
         this.id = id;
         this.test_id = test_id;
@@ -19,6 +20,7 @@ public class Onderzoekuitslag {
         this.result_date = result_date;
     }
 
+    //Constructor voor het maken van een Onderzoekuitslag-object op basis van een ResultSet uit een databasequery
     public Onderzoekuitslag(ResultSet result) throws SQLException {
         this.id = result.getInt("id");
         this.test_id = result.getInt("test_id");
@@ -27,6 +29,7 @@ public class Onderzoekuitslag {
         this.result_date = result.getDate("result_date").toLocalDate();
     }
 
+    //Getters en setters
     public Integer getId() {
         return id;
     }

@@ -29,6 +29,7 @@ public class Onderzoekscherm {
         this.formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     }
 
+    //Methode die Onderzoekgegevensscherm creërt en terug geeft als BorderPane
     public BorderPane createOnderzoekgegevensscherm(Bloedonderzoek bloedonderzoek, Onderzoekuitslag onderzoekuitslag) {
         BorderPane borderPane = new BorderPane();
 
@@ -48,18 +49,20 @@ public class Onderzoekscherm {
         return borderPane;
     }
 
+    //Methode die scheidingslijn maakt
     private VBox createDivider() {
         Line divider = new Line();
         divider.setStroke(Color.BLACK);
         divider.setStrokeWidth(2);
-        divider.setStartX(0); // Verander de Y-coördinaat van het beginpunt van de lijn
-        divider.setEndX(780);  // Verander de Y-coördinaat van het eindpunt van de lijn
+        divider.setStartX(0);
+        divider.setEndX(780);
         VBox dividerContainer = new VBox(divider);
-        dividerContainer.setPadding(new Insets(0, 10, 0, 10)); // Voeg padding toe aan de boven- en onderkant
+        dividerContainer.setPadding(new Insets(0, 10, 0, 10));
 
         return dividerContainer;
     }
 
+    //Methode die bovenste balk maakt met titel en terugknop
     private HBox createTopbar(){
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_RIGHT);
@@ -76,6 +79,7 @@ public class Onderzoekscherm {
         HBox.setHgrow(leftBox, Priority.ALWAYS);
         topBar.getChildren().addAll(leftBox, backButton);
 
+        //Zorgt ervoor dat terug genavigeerd wordt naar pagina specifieke patiënt
         backButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -86,6 +90,7 @@ public class Onderzoekscherm {
         return topBar;
     }
 
+    //Methode die een grid met onderzoekgegevens maakt
     private GridPane createOnderzoeksBox(Bloedonderzoek bloedonderzoek){
         GridPane leftGrid = new GridPane();
         leftGrid.setPadding(new Insets(10));
@@ -137,6 +142,8 @@ public class Onderzoekscherm {
 
         return leftGrid;
     }
+
+    //Methode die een grid met uitslaggegevens maakt
     private GridPane createUitslagbox(Onderzoekuitslag onderzoekuitslag){
         GridPane rightGrid = new GridPane();
         rightGrid.setPadding(new Insets(10));
@@ -148,6 +155,7 @@ public class Onderzoekscherm {
         titleUitslag.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         rightGrid.add(titleUitslag, 0, 0, 3, 1);
 
+        //Checkt of uitslag al bekend is en vult op basis daarvan de grid
         if (onderzoekuitslag != null) {
             Label uitslagIdLabel = new Label("Uitslag ID: ");
             uitslagIdLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));

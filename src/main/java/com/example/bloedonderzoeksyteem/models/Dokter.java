@@ -8,18 +8,21 @@ public class Dokter {
     private String first_name;
     private String last_name;
 
+    //Constructor voor het maken van een Dokter-object met opgegeven gegevens
     public Dokter(Integer id, String first_name, String last_name) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
     }
 
+    //Constructor voor het maken van een Dokter-object op basis van een ResultSet uit een databasequery
     public Dokter(ResultSet result) throws SQLException {
         this.id = result.getInt("id");
         this.first_name = result.getString("firstname");
         this.last_name = result.getString("lastname");
     }
 
+    //Getters en setters
     public Integer getId() {
         return id;
     }

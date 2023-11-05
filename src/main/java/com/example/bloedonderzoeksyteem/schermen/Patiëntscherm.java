@@ -49,7 +49,7 @@ public class Patiëntscherm {
         this.applicatie = applicatie;
         this.formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     }
-
+    //Methode die patiëntscherm maakt en terug geeft als BorderPane
     public BorderPane createPatiëntgegevensscherm(Patiënt patiënt) {
         BorderPane borderPane = new BorderPane();
 
@@ -70,19 +70,20 @@ public class Patiëntscherm {
         return borderPane;
     }
 
+    //Methode die scheidingslijn maakt
     private VBox createDivider() {
         Line divider = new Line();
         divider.setStroke(Color.BLACK);
         divider.setStrokeWidth(2);
-        divider.setStartX(0); // Verander de Y-coördinaat van het beginpunt van de lijn
-        divider.setEndX(780);  // Verander de Y-coördinaat van het eindpunt van de lijn
+        divider.setStartX(0);
+        divider.setEndX(780);
         VBox dividerContainer = new VBox(divider);
-        dividerContainer.setPadding(new Insets(0, 10, 0, 10)); // Voeg padding toe aan de boven- en onderkant
+        dividerContainer.setPadding(new Insets(0, 10, 0, 10));
 
         return dividerContainer;
     }
 
-
+    //Methode die bovenste balk maakt met titel en terugknop
     private HBox createTopbar(){
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_RIGHT);
@@ -107,6 +108,8 @@ public class Patiëntscherm {
 
         return topBar;
     }
+
+    //Methode die een grid met patiëntgegevens maakt
     private GridPane createGegevensBox(Patiënt patiënt) {
         GridPane gegevensGrid = new GridPane();
         gegevensGrid.setPadding(new Insets(10));
@@ -160,6 +163,7 @@ public class Patiëntscherm {
         return gegevensGrid;
     }
 
+    //Methode die een horizontale box met knoppen 'wijzigen' en 'verwijderen maakt
     private HBox createKnoppenBox(Patiënt patiënt) {
         HBox knoppenBox = new HBox();
         knoppenBox.setPadding(new Insets(0,10,10,10));
@@ -172,6 +176,7 @@ public class Patiëntscherm {
         Button verwijderenButton = new Button("Verwijderen");
         verwijderenButton.setStyle("-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;");
 
+        //Zorgt ervoor dat pop-up voor wijzigen opent
         wijzigenButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -179,6 +184,7 @@ public class Patiëntscherm {
             }
         });
 
+        //Zorgt ervoor dat een patiënt verwijderd wordt uit database en terugschakelt naar patiëntenlijst
         verwijderenButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -202,6 +208,7 @@ public class Patiëntscherm {
         return knoppenBox;
     }
 
+    //Methode die een box met alle onderzoeken maakt en een knop 'toevoegen'
     private VBox createOnderzoekenBox(Patiënt patiënt) {
         this.onderzoekenBox = new VBox();
         onderzoekenBox.setPadding(new Insets(10));
@@ -217,6 +224,7 @@ public class Patiëntscherm {
         Button addResearchButton = new Button("Onderzoek toevoegen");
         addResearchButton.setStyle(addButtonStyle);
 
+        //Zorgt ervoor dat een pop-up voor toevoegenonderzoek opent
         addResearchButton.setOnAction(e -> {
             openToevoegenPopup(patiënt.getId());
         });
@@ -228,6 +236,7 @@ public class Patiëntscherm {
         return onderzoekenBox;
     }
 
+    //Update de onderzoekenbox met alle onderzoeken specifieke patiënt
     private void updateOnderzoekenBox(int patientId) {
         ObservableList<Bloedonderzoek> newItems = FXCollections.observableArrayList();
 
@@ -244,6 +253,7 @@ public class Patiëntscherm {
         bloedonderzoekTableView.getItems().setAll(newItems);
     }
 
+    //Methode die tabel met alle bloedonderzoeken van specifieke patiënt maakt
     public TableView<Bloedonderzoek> createOnderzoekTableView(int patientId) {
         TableView<Bloedonderzoek> tableView = new TableView<>();
         tableView.setEditable(true);
@@ -296,10 +306,13 @@ public class Patiëntscherm {
 
         return tableView;
     }
+
+
     public TableView<Bloedonderzoek> getBloedonderzoekTableView() {
         return bloedonderzoekTableView;
     }
 
+    //Creërt een pop-up die het mogelijk maakt de patiëntgegevens te wijzigen
     public void openWijzigingsPopup(Patiënt patiënt) {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
@@ -367,6 +380,7 @@ public class Patiëntscherm {
         cancelButton.setStyle(cancelButtonStyle);
         gridPane.add(cancelButton, 0, 7);
 
+        //Zorgt ervoor dat de gewijzigde gegevens opgeslagen worden in de database
         saveButton.setOnAction(e -> {
             String firstName = firstNameField.getText();
             String lastName = lastNameField.getText();
@@ -376,6 +390,7 @@ public class Patiëntscherm {
             String email = emailField.getText();
             String phone = phoneField.getText();
 
+            //Controleert op lege velden
             if (firstName.isEmpty() || lastName.isEmpty() || birthDate == null ||
                     bsn.isEmpty() || address.isEmpty() || email.isEmpty() || phone.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -409,6 +424,7 @@ public class Patiëntscherm {
             popupStage.close();
         });
 
+        //Cancelt de wijziging
         cancelButton.setOnAction(e -> {
             popupStage.close();
         });
@@ -418,6 +434,7 @@ public class Patiëntscherm {
         popupStage.showAndWait();
     }
 
+    //Zorgt ervoor dat de gewijzigde gegevens zichtbaar worden in de interface
     private void updateUIWithPatientData(Patiënt patiënt) {
         this.nameValueLabel.setText(patiënt.getFirstName() + " " + patiënt.getLastName());
         this.birthDateValueLabel.setText(patiënt.getBirthDate().format(formatter));
@@ -426,6 +443,8 @@ public class Patiëntscherm {
         this.phoneNumberValueLabel.setText(patiënt.getPhoneNumber());
         this.emailValueLabel.setText(patiënt.getEmailAddress());
     }
+
+    //Creërt een pop-up die het mogelijk maakt om een onderzoek toe te voegen
     public void openToevoegenPopup(int patientId) {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
@@ -460,6 +479,7 @@ public class Patiëntscherm {
         Label doctorLabel = new Label("Dokter:");
         doctorLabel.setStyle(labelStyle);
         ComboBox<Dokter> doctorComboBox = new ComboBox<>();
+        //Vult de combobox met alle namen van dokters
         try {
             ResultSet doctorsResultSet = db.getAllDoctors();
             List<Dokter> doctorsList = new ArrayList<>();
@@ -479,12 +499,14 @@ public class Patiëntscherm {
         gridPane.add(doctorComboBox, 1, 3);
 
         Button saveButton = new Button("Opslaan");
+        //Zorgt ervoor dat het onderzoek wordt opgeslagen in de database
         saveButton.setOnAction(event -> {
             String selectedType = typeTextField.getText();
             String buisjesText = buisjesTextField.getText();
             LocalDate testDatum = datumPicker.getValue();
             Dokter selectedDoctor = doctorComboBox.getValue();
 
+            //Controleert op lege velden
             if (selectedType.isEmpty() || buisjesText.isEmpty() || testDatum == null || selectedDoctor == null) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Waarschuwing");

@@ -15,6 +15,7 @@ public class Onderzoekenlijst {
     private Database db;
     private TableView<Bloedonderzoek> bloedonderzoekTableView;
 
+    //Methode die Onderzoeklijstscherm creërt en terug geeft als BorderPane
     public BorderPane createBloedonderzoekscherm() {
         BorderPane borderPane = new BorderPane();
 
@@ -39,6 +40,7 @@ public class Onderzoekenlijst {
         return bloedonderzoekTableView;
     }
 
+    //Creërt een tabel met onderzoeken zonder uitslag
     public TableView<Bloedonderzoek> createBloedonderzoekTableView() {
         TableView<Bloedonderzoek> tableView = new TableView<>();
         tableView.setEditable(true);
@@ -57,6 +59,7 @@ public class Onderzoekenlijst {
         testDateColumn.setCellFactory(column -> new TableCell<Bloedonderzoek, LocalDate>() {
             private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
+            //Update de datum naar juiste format
             @Override
             protected void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
@@ -76,7 +79,7 @@ public class Onderzoekenlijst {
             while (rs.next()) {
                 Bloedonderzoek bloedonderzoek = new Bloedonderzoek(rs);
 
-                // Check if the blood test has a result
+                //Checkt of er al een uitslag bekend is en vult tabel met onderzoeken zonder uitslag
                 if (!db.hasBloodTestResult(bloedonderzoek.getId())) {
                     tableView.getItems().add(bloedonderzoek);
                 }

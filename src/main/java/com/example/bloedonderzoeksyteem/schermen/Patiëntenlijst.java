@@ -24,6 +24,7 @@ public class Patiëntenlijst {
     private Database db;
     private TableView<Patiënt> patiëntTableView;
 
+    //Methode die patiëntenlijst creërt en terug geeft als BorderPane
     public BorderPane createPatiëntlijst() {
         BorderPane borderPane = new BorderPane();
 
@@ -58,6 +59,7 @@ public class Patiëntenlijst {
         return patiëntTableView;
     }
 
+    //Creërt een tabel voor het weergeven van alle patiënten
     public TableView<Patiënt> createPatiëntTableView() {
         TableView<Patiënt> tableView = new TableView<>();
         tableView.setEditable(true);
@@ -76,6 +78,7 @@ public class Patiëntenlijst {
         birthDateColumn.setCellFactory(column -> new TableCell<Patiënt, LocalDate>() {
             private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
+            //Update de datum naar juiste format
             @Override
             protected void updateItem(LocalDate date, boolean empty) {
                 super.updateItem(date, empty);
@@ -90,6 +93,7 @@ public class Patiëntenlijst {
         tableView.getColumns().addAll(idColumn, firstNameColumn, lastNameColumn, birthDateColumn);
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        //Haalt de patiënten op uit database en vult tabel
         try {
             ResultSet rs = db.getPatientData();
             while (rs.next()) {
@@ -103,6 +107,7 @@ public class Patiëntenlijst {
         return tableView;
     }
 
+    //Creërt een pop-up die het mogelijk maakt een nieuwe patiënt toe te voegen
     private void createAddPatientPopup() {
         Stage popupStage = new Stage();
         popupStage.initModality(Modality.APPLICATION_MODAL);
@@ -162,6 +167,7 @@ public class Patiëntenlijst {
         String saveButtonStyle = "-fx-font-weight: bold; -fx-border-color: black; -fx-background-color: white; -fx-border-radius: 5px; -fx-background-radius: 5px;";
         Button saveButton = new Button("Opslaan");
         saveButton.setStyle(saveButtonStyle);
+        //Zorgt ervoor dat patiënt wordt opgeslagen in de database
         saveButton.setOnAction(e -> {
             String firstName = firstNameField.getText();
             String lastName = lastNameField.getText();
@@ -171,6 +177,7 @@ public class Patiëntenlijst {
             String email = emailField.getText();
             String phone = phoneField.getText();
 
+            //Checkt voor lege velden
             if (firstName.isEmpty() || lastName.isEmpty() || birthDate == null || bsn.isEmpty() || address.isEmpty() || email.isEmpty() || phone.isEmpty()) {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Waarschuwing");

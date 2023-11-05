@@ -12,6 +12,7 @@ public class Bloedonderzoek {
     private Integer doctor_id;
     private Integer patient_id;
 
+    //Constructor voor het maken van een Bloedonderzoek-object met opgegeven gegevens
     public Bloedonderzoek(Integer id, String test_type, Integer tube_count, LocalDate test_date, Integer doctor_id, Integer patient_id) {
         this.id = id;
         this.test_type = test_type;
@@ -21,6 +22,7 @@ public class Bloedonderzoek {
         this.patient_id = patient_id;
     }
 
+    //Constructor voor het maken van een Bloedonderzoek-object op basis van een ResultSet uit een databasequery
     public Bloedonderzoek(ResultSet result) throws SQLException {
         this.id = result.getInt("id");
         this.test_type = result.getString("test_type");
@@ -30,6 +32,7 @@ public class Bloedonderzoek {
         this.patient_id = result.getInt("patient_id");
     }
 
+    //Getters en setters
     public Integer getId() {
         return id;
     }

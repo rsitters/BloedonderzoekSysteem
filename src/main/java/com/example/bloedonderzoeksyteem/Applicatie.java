@@ -12,7 +12,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -39,11 +38,15 @@ public class Applicatie extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        //Configureert gebruikersinterface bij opstarten
         setupUI(stage);
+        //Configureert de databaseverbinding bij opstarten
         setupDatabase();
+        //Toont hoofdscherm van de applicatie bij opstarten
         stage.show();
     }
 
+    //Configuratie van de gebruikersinterface
     private void setupUI(Stage stage) {
         root = new BorderPane();
         Scene scene = new Scene(root, 800, 600);
@@ -51,13 +54,17 @@ public class Applicatie extends Application {
         stage.setTitle(TITLE);
         stage.setScene(scene);
 
+        //Configureert de bovenste rand
         setupTopBar();
+        //Configureert de onderste rand
         setupBottomBar();
 
         startscherm = new Startscherm(this);
+        //Configureert startscherm als centrale deel applicatie
         root.setCenter(startscherm.createStartscherm());
     }
 
+    //Configureert de bovenste rand
     private void setupTopBar() {
         HBox topBar = new HBox();
         topBar.setPadding(new Insets(10));
@@ -79,9 +86,11 @@ public class Applicatie extends Application {
         topBar.getChildren().addAll(leftBox, returnButton);
         root.setTop(topBar);
 
+        //Zorgt ervoor dat HOME knop functioneel is en terug navigeert naar startscherm
         returnButton.setOnAction(event -> switchToStartscherm());
     }
 
+    //Configureert de onderste rand
     private void setupBottomBar() {
         HBox bottomBar = new HBox();
         bottomBar.setPadding(new Insets(10));
@@ -95,6 +104,7 @@ public class Applicatie extends Application {
         root.setBottom(bottomBar);
     }
 
+    //Configureert de databaseverbinding
     private void setupDatabase() {
         try {
             db = new Database();
@@ -103,11 +113,13 @@ public class Applicatie extends Application {
         }
     }
 
+    //Schakelt naar het scherm met lijst van patiënten
     public void switchToPatiëntlijst() {
         patiëntenlijst = new Patiëntenlijst();
         root.setCenter(patiëntenlijst.createPatiëntlijst());
 
         TableView<Patiënt> patiëntTableView = patiëntenlijst.getPatiëntTableView();
+        //Zorgt ervoor dat pagina specifieke patiënt opent bij dubbelklikken
         patiëntTableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 Patiënt selectedPatiënt = patiëntTableView.getSelectionModel().getSelectedItem();
@@ -118,11 +130,13 @@ public class Applicatie extends Application {
         });
     }
 
+    //Schakelt naar scherm met lijst bloedonderzoeken
     public void switchToOnderzoeklijst() {
         onderzoekenlijst = new Onderzoekenlijst();
         root.setCenter(onderzoekenlijst.createBloedonderzoekscherm());
         TableView<Bloedonderzoek> bloedonderzoekTableView = onderzoekenlijst.getBloedonderzoekTableView();
 
+        //Zorgt ervoor dat pagina specifiek onderzoek opent bij dubbelklikken
         bloedonderzoekTableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 Bloedonderzoek selectedBloedonderzoek = bloedonderzoekTableView.getSelectionModel().getSelectedItem();
@@ -151,16 +165,19 @@ public class Applicatie extends Application {
         });
     }
 
+    //Schakelt naar scherm specifiek bloedonderzoek
     public void openBloedonderzoekPagina(Bloedonderzoek bloedonderzoek, Onderzoekuitslag onderzoekuitslag) {
         onderzoekscherm = new Onderzoekscherm(this);
         root.setCenter(onderzoekscherm.createOnderzoekgegevensscherm(bloedonderzoek, onderzoekuitslag));
     }
 
+    //Schakelt naar scherm specifiek onderzoek met uitslag
     public void openBloedonderzoekuitslagPagina(Bloedonderzoek bloedonderzoek, Onderzoekuitslag onderzoekuitslag) {
         onderzoekuitslagscherm = new Onderzoekuitslagscherm(this);
         root.setCenter(onderzoekuitslagscherm.createOnderzoekgegevensscherm(bloedonderzoek, onderzoekuitslag));
     }
 
+    //Schakelt naar scherm specifieke patiënt
     public void openPatiëntPagina(Patiënt patiënt) {
         currentPatiënt = patiënt;
         patiëntscherm = new Patiëntscherm(this);
@@ -169,6 +186,7 @@ public class Applicatie extends Application {
 
         TableView<Bloedonderzoek> bloedonderzoekTableView = patiëntscherm.getBloedonderzoekTableView();
 
+        //Zorgt ervoor dat scherm specifiek onderzoek opent bij dubbelklikken
         bloedonderzoekTableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 Bloedonderzoek selectedBloedonderzoek = bloedonderzoekTableView.getSelectionModel().getSelectedItem();
@@ -197,9 +215,11 @@ public class Applicatie extends Application {
         });
     }
 
+    //Schakelt naar scherm van een specifieke patiënt
     public void openPatiëntPagina() {
         openPatiëntPagina(currentPatiënt);
     }
+    //Schakelt terug naar startscherm
     public void switchToStartscherm() {
         root.setCenter(startscherm.createStartscherm());
     }

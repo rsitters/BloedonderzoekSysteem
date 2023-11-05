@@ -16,12 +16,16 @@ public class Database {
     private PreparedStatement checkForResultStatement;
 
     public Database() {
+        //Database gegevens
         String user = "bloedonderzoek_robin";
         String passwd = "E6-%25kt`Xci{J@";
         String cString = "jdbc:mysql://adainforma.tk/bp2_bloedonderzoek_robin?user=" + user + "&password=" + passwd;
         try {
+            //Maakt verbinding met database
             this.conn = DriverManager.getConnection(cString);
+            //Maakt een Statement-object voor algemene SQL-query's
             this.stm = conn.createStatement();
+            //Voorbereide statements
             this.selectBloodTestsStatement = conn.prepareStatement("SELECT * FROM blood_test WHERE patient_id = ?");
             this.selectBloodTestResult = conn.prepareStatement("SELECT * FROM test_result WHERE test_id = ?");
             this.insertStatement = conn.prepareStatement("INSERT INTO patient (firstname, lastname, birthdate, bsn, address, email, phone) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -36,34 +40,41 @@ public class Database {
         }
     }
 
+    //Haalt alle patiëntgegevens op
     public ResultSet getPatientData() throws SQLException {
         return stm.executeQuery("SELECT * FROM patient");
     }
 
+    //Haalt alle bloedonderzoeken op
     public ResultSet getAllBloodTests() throws SQLException{
         return stm.executeQuery("SELECT * FROM blood_test");
     }
 
+    //Haalt alle dokters op
     public ResultSet getAllDoctors() throws  SQLException{
         return stm.executeQuery("SELECT * FROM doctor");
     }
 
+    //Haalt alle laboranten op
     public ResultSet getAllLaborants() throws  SQLException{
         return stm.executeQuery("SELECT * FROM lab_technician");
     }
 
+    //Haalt alle bloedonderzoeken op voor specifieke patiënt
     public ResultSet getBloodTestsForPatient(int patientId) throws SQLException {
         selectBloodTestsStatement.setInt(1, patientId);
 
         return selectBloodTestsStatement.executeQuery();
     }
 
+    //Haalt uitslag op voor een specifiek bloedonderzoek
     public ResultSet getBloodTestResult(int testId) throws SQLException{
         selectBloodTestResult.setInt(1, testId);
 
         return selectBloodTestResult.executeQuery();
     }
 
+    //Voegt een nieuwe patiënt toe
     public void addPatient(String firstName, String lastName, Date birthDate, String bsn, String address, String email, String phone) throws SQLException {
         insertStatement.setString(1, firstName);
         insertStatement.setString(2, lastName);
@@ -76,12 +87,14 @@ public class Database {
         insertStatement.executeUpdate();
     }
 
+    //Verwijdert een patiënt
     public void deletePatient(int patientId) throws SQLException {
         deleteStatement.setInt(1, patientId);
 
         deleteStatement.executeUpdate();
     }
 
+    //Wijzigt een patiënt
     public void updatePatient(int patientId, String firstName, String lastName, Date birthDate, String bsn, String address, String email, String phone) throws SQLException {
         updateStatement.setString(1, firstName);
         updateStatement.setString(2, lastName);
@@ -95,6 +108,7 @@ public class Database {
         updateStatement.executeUpdate();
     }
 
+    //Voegt een bloedonderzoek toe
     public void addResearch(int patientId, String testType, int numberOfTubes, Date testDate, int doctor) throws SQLException {
             insertBloodTestStatement.setInt(1, patientId);
             insertBloodTestStatement.setString(2, testType);
@@ -105,6 +119,7 @@ public class Database {
             insertBloodTestStatement.executeUpdate();
     }
 
+    //Voegt een uitslag toe
     public void addResult(int testId, String result, Date resultDate, int laborant) throws SQLException{
         insertResultStatement.setInt(1, testId);
         insertResultStatement.setString(2, result);
@@ -113,6 +128,8 @@ public class Database {
 
         insertResultStatement.executeUpdate();
     }
+
+    //Controleert of er een uitslag bekend is voor een specifieke test
     public boolean hasBloodTestResult(int bloodTestId) {
         try {
             checkForResultStatement.setInt(1, bloodTestId);
@@ -133,7 +150,7 @@ public class Database {
         return false;
     }
 
-
+    //Haalt de voor- en achternaam van een dokter op
     public String getDoctorName(int doctorId) {
         try {
             ResultSet resultSet = stm.executeQuery("SELECT * FROM doctor WHERE id = " + doctorId);
@@ -148,6 +165,7 @@ public class Database {
         return "";
     }
 
+    //Haalt de voor- en achternaam van een patiënt op
     public String getPatientName(int patientId) {
         try {
             ResultSet resultSet = stm.executeQuery("SELECT * FROM patient WHERE id = " + patientId);
@@ -162,6 +180,7 @@ public class Database {
         return "";
     }
 
+    //Haalt de voor- en achternaam van een laborant op
     public String getLaborantName(int laborantId) {
         try {
             ResultSet resultSet = stm.executeQuery("SELECT * FROM lab_technician WHERE id = " + laborantId);

@@ -14,6 +14,7 @@ public class Patiënt {
     private String phone_number;
     private String email_address;
 
+    //Constructor voor het maken van een Patiënt-object met opgegeven gegevens
     public Patiënt(Integer id, String first_name, String last_name, LocalDate birth_date, String bsn_number, String address, String phone_number, String email_address) {
         this.id = id;
         this.first_name = first_name;
@@ -25,6 +26,7 @@ public class Patiënt {
         this.email_address = email_address;
     }
 
+    //Constructor voor het maken van een Patiënt-object op basis van een ResultSet uit een databasequery
     public Patiënt(ResultSet result) throws SQLException {
         this.id = result.getInt("id");
         this.first_name = result.getString("firstname");
@@ -36,6 +38,7 @@ public class Patiënt {
         this.email_address = result.getString("email");
     }
 
+    //Getters en setters
     public Integer getId() {
         return id;
     }
