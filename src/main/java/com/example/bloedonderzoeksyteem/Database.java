@@ -16,9 +16,9 @@ public class Database {
     private PreparedStatement checkForResultStatement;
 
     public Database() {
-        String user = "root";
-        String passwd = "";
-        String cString = "jdbc:mysql://localhost:3306/bloed_onderzoek_systeem?user=" + user + "&password=" + passwd;
+        String user = "bloedonderzoek_robin";
+        String passwd = "E6-%25kt`Xci{J@";
+        String cString = "jdbc:mysql://adainforma.tk/bp2_bloedonderzoek_robin?user=" + user + "&password=" + passwd;
         try {
             this.conn = DriverManager.getConnection(cString);
             this.stm = conn.createStatement();
@@ -31,6 +31,7 @@ public class Database {
             this.insertResultStatement = conn.prepareStatement("INSERT INTO test_result (test_id, result, result_date, technician_id) VALUES(?,?,?,?)");
             this.checkForResultStatement = conn.prepareStatement("SELECT COUNT(*) AS count FROM test_result WHERE test_id = ?");
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println("Kan geen verbinding maken!");
         }
     }
